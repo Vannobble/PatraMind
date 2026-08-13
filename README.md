@@ -102,6 +102,14 @@ supabase/  schema.sql
 types/
 ```
 
+## Auto Deploy
+
+Push ke branch `main` otomatis men-deploy ke production
+(`https://patra-mind.vercel.app`) melalui GitHub Action
+`.github/workflows/vercel-deploy.yml` yang memanggil Vercel Deploy Hook.
+Deploy juga bisa dipicu manual dari tab **Actions → Deploy to Vercel →
+Run workflow**.
+
 ## Catatan Prototype
 
 - RLS dimatikan via policy (semua akses lewat service role) — sebelum
