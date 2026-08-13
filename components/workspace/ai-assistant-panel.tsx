@@ -84,7 +84,12 @@ export function AIAssistantPanel({
         </div>
 
         <div className="min-h-0 flex-1">
-          {tab === "chat" ? <ChatPanel tenderId={tenderId} /> : <LivePreviewPanel />}
+          <div className={cn("h-full", tab === "chat" ? "block" : "hidden")}>
+            <ChatPanel tenderId={tenderId} />
+          </div>
+          <div className={cn("h-full", tab === "preview" ? "block" : "hidden")}>
+            <LivePreviewPanel />
+          </div>
         </div>
       </aside>
     </>

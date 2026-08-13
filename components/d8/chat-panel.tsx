@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { SendHorizonal, Sparkles, Bot, User, FileText, Loader2, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useWorkspace } from "@/components/workspace/workspace-provider";
 import { BaDocument } from "@/components/workspace/ba-document";
-import type { ChatMessage } from "@/types";
 
 const SUGGESTIONS = [
   "Apa spesifikasi teknis impeller?",
@@ -16,10 +15,8 @@ const SUGGESTIONS = [
 ];
 
 export function ChatPanel({ tenderId }: { tenderId: string }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { chat, setChat, sendChat } = useWorkspace();
+  const { messages, input, loading, error } = chat;
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,42 +27,8 @@ export function ChatPanel({ tenderId }: { tenderId: string }) {
   }, [messages, loading]);
 
   async function send(text?: string) {
-    const q = (text ?? input).trim();
-    if (!q || loading) return;
-    setInput("");
-    setError(null);
-    setMessages((m) => [...m, { id: crypto.randomUUID(), role: "user", content: q }]);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tenderId, question: q }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Gagal menjawab");
-      setMessages((m) => [
-        ...m,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: json.answer,
-          sources: json.sources ?? [],
-        },
-      ]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
-      setMessages((m) => [
-        ...m,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: "Maaf, saya mengalami kendala saat menjawab. Coba lagi.",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+    if (loading) return;
+    await sendChat(tenderId, text ?? input);
   }
 
   return (
@@ -157,7 +120,9 @@ export function ChatPanel({ tenderId }: { tenderId: string }) {
         >
           <input
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) =>
+              setChat((prev) => ({ ...prev, input: e.target.value }))
+            }
             placeholder="Tanya dokumen project…"
             className="h-10 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-xs text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
           />
