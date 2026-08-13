@@ -71,6 +71,82 @@ Penawaran dievaluasi dalam empat aspek: teknis, legal/administrasi, harga, dan K
 7. LAIN-LAIN
 Ketentuan tambahan mengenai SLA purna jual, ketersediaan suku cadang, dan dukungan teknis penyedia akan diatur dalam kontrak. RKS ini dapat diubah melalui addendum yang ditetapkan panitia.`;
 
+const SUPPORT_DOCS: { nama: string; text: string }[] = [
+  {
+    nama: "Berita Acara Aanwijzing 2026.txt",
+    text: `BERITA ACARA AANWIJZING
+PENGADAAN SPARE PART POMPA SENTRIFUGAL NPK 2026
+Nomor PR: PR-26-004821
+
+1. PELAKSANAAN
+Aanwijzing dilaksanakan secara daring pada hari Kamis, 12 Maret 2026, pukul 10.00-12.00 WIB, dipimpin oleh Panitia Pengadaan PT Pertamina Patra Niaga dan dihadiri 8 perwakilan calon penyedia.
+
+2. JALANNYA SESI
+Panitia menjelaskan lingkup pekerjaan, spesifikasi teknis utama (impeller, mechanical seal, bearing), HPS sebesar Rp 1.250.000.000, serta mekanisme evaluasi empat aspek (teknis, legal, harga, K3/SLA).
+
+3. PERTANYAAN DAN JAWABAN
+3.1 Apakah biaya pengiriman ke gudang Patra Niaga sudah termasuk dalam penawaran? Jawaban: Ya, biaya pengiriman ke gudang sudah termasuk dalam penawaran.
+3.2 Apakah material certificate wajib dilampirkan saat penawaran? Jawaban: Wajib dilampirkan bersamaan dengan dokumen penawaran.
+3.3 Apakah ada toleransi dimensi impeller? Jawaban: Toleransi mengikuti standar OEM, maksimal plus minus 1 mm.
+3.4 Apakah garansi dihitung sejak barang diterima? Jawaban: Ya, garansi mutu 12 bulan sejak serah terima barang.
+3.5 Bagaimana jika terjadi keterlambatan pengiriman? Jawaban: Berlaku ketentuan denda keterlambatan sesuai klausul kontrak.
+
+4. PENUTUP
+Peserta diharapkan menyampaikan penawaran sesuai ketentuan RKS beserta perubahan (jika ada) melalui addendum. Berita Acara ini menjadi lampiran resmi proses pengadaan.`,
+  },
+  {
+    nama: "Addendum RKS Perubahan Waktu Penyerahan.txt",
+    text: `ADDENDUM RKS
+PENGADAAN SPARE PART POMPA SENTRIFUGAL NPK 2026
+Nomor PR: PR-26-004821
+
+1. DASAR
+Addendum ini diterbitkan berdasarkan hasil klarifikasi pada proses aanwijzing tanggal 12 Maret 2026.
+
+2. PERUBAHAN KETENTUAN
+2.1 Waktu Penyerahan
+Ketentuan waktu penyerahan maksimal 60 hari kalender diubah menjadi maksimal 75 hari kalender sejak Surat Perintah Kerja (SPK) diterbitkan, mempertimbangkan ketersediaan material impeller stainless steel 316L di pasar domestik.
+
+2.2 Tempat Penyerahan
+Penyerahan barang dilakukan di gudang PT Pertamina Patra Niaga, Jl. Raya Cilacap, Jawa Tengah, dengan jam kerja 08.00-16.00 WIB.
+
+2.3 Dokumen Penawaran
+Calon penyedia dapat menyampaikan pertanyaan tambahan secara tertulis paling lambat 3 hari kerja setelah addendum ini diterbitkan.
+
+2.4 Jaminan Penawaran
+Jaminan penawaran (bila dipersyaratkan) diterbitkan oleh bank umum dengan masa berlaku minimal 120 hari kalender.
+
+3. KETENTUAN LAIN
+Ketentuan selain yang diubah pada addendum ini tetap mengikuti RKS awal. Addendum ini merupakan satu kesatuan yang tidak terpisahkan dari RKS.`,
+  },
+  {
+    nama: "Syarat K3 dan Lingkungan Pengiriman Barang.txt",
+    text: `PERSYARATAN K3 DAN LINGKUNGAN
+PENGIRIMAN DAN PENANGANAN BARANG
+PENGADAAN SPARE PART POMPA SENTRIFUGAL NPK 2026
+
+1. PERSYARATAN UMUM
+Setiap penyedia wajib memenuhi ketentuan keselamatan dan kesehatan kerja (K3) serta pengelolaan lingkungan dalam seluruh rangkaian pengiriman dan penanganan barang.
+
+2. PERSYARATAN SISTEM MANAJEMEN
+2.1 Sertifikat SMK3 minimal level 2 atau setara.
+2.2 Sistem manajemen lingkungan ISO 14001 atau setara.
+2.3 Memiliki prosedur penanganan darurat (emergency response) untuk insiden di area pengiriman.
+
+3. KETENTUAN OPERASIONAL
+3.1 Pengemudi dan petugas penanganan barang wajib menggunakan APD lengkap (helm, sepatu safety, sarung tangan, rompi reflektif).
+3.2 Kendaraan pengangkut wajib dalam kondisi laik jalan dan dilengkapi dokumen pengangkutan yang sah.
+3.3 Barang berbahaya (bila ada) wajib dikemas sesuai klasifikasi dan diberi label sesuai ketentuan.
+
+4. KETENTUAN LINGKUNGAN
+4.1 Limbah kemasan (pallet, karton, plastik) wajib dikelola sesuai ketentuan pengelolaan limbah.
+4.2 Dilarang membuang limbah pelumas atau bahan kimia ke lingkungan sekitar area pengiriman.
+
+5. EVALUASI
+Pemenuhan persyaratan K3 dan lingkungan menjadi bagian dari evaluasi aspek K3/SLA pada penilaian penawaran.`,
+  },
+];
+
 const OFFERS: { nama: string; text: string }[] = [
   {
     nama: "penawaran PT Energi Teknologi Sejahtera.txt",
@@ -219,6 +295,11 @@ async function seedTenderAndDocs() {
     { jenis: "rks_tor" as const, nama_file: "RKS TOR Pengadaan Spare Part NPK 2026.txt", konten_text: RKS_TEXT },
     ...OFFERS.map((o) => ({
       jenis: "penawaran" as const,
+      nama_file: o.nama,
+      konten_text: o.text,
+    })),
+    ...SUPPORT_DOCS.map((o) => ({
+      jenis: "lainnya" as const,
       nama_file: o.nama,
       konten_text: o.text,
     })),
