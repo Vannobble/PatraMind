@@ -222,7 +222,325 @@ Kegiatan pengiriman memperhatikan ketentuan keselamatan kerja dasar. Sertifikat 
   },
 ];
 
+const EXTRA_TENDERS: TenderSeed[] = [
+  {
+    nama_pekerjaan: "Pengadaan Jasa Kalibrasi Alat Ukur dan Instrumentasi 2026",
+    nomor_pr: "PR-26-004812",
+    status: "evaluasi",
+    rks: {
+      nama: "RKS TOR Jasa Kalibrasi Alat Ukur dan Instrumentasi 2026.txt",
+      text: `RKS/TOR JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
+NOMOR PR: PR-26-004812
+
+1. PENDAHULUAN
+Jasa kalibrasi alat ukur dan instrumentasi tahun 2026 bertujuan memastikan ketertelusuran pengukuran seluruh alat ukur proses di unit operasional.
+
+2. LINGKUP PEKERJAAN
+Kalibrasi flow meter (12 unit), pressure gauge (24 unit), temperature transmitter (16 unit), dan torque wrench (8 unit) yang tersebar di area produksi dan laboratorium.
+
+3. PERSYARATAN LABORATORIUM
+Laboratorium pelaksana wajib terakreditasi KAN ISO/IEC 17025, memiliki standar acuan yang tertelusur ke standar nasional/internasional, serta menerbitkan sertifikat kalibrasi yang diakui.
+
+4. JADWAL PELAKSANAAN
+Kalibrasi dilaksanakan dalam 30 hari kalender sejak SPK terbit, dengan prioritas pada unit pengukuran kritis.
+
+5. MEKANISME EVALUASI
+Penawaran dievaluasi dalam empat aspek: teknis, legal/administrasi, harga, dan K3/SLA. HPS pengadaan ditetapkan sebesar Rp 450.000.000.`,
+    },
+    offers: [
+      {
+        nama: "penawaran PT Metrologi Nusantara.txt",
+        text: `PENAWARAN PT METROLOGI NUSANTARA
+JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
+
+1. PENDAHULUAN
+PT Metrologi Nusantara mengajukan penawaran jasa kalibrasi alat ukur dan instrumentasi.
+
+2. KOMPETENSI LABORATORIUM
+Laboratorium kami terakreditasi KAN ISO/IEC 17025 dengan ruang lingkup seluruh parameter yang diminta (flow, tekanan, temperatur, torsi) dan standar acuan tertelusur nasional.
+
+3. HARGA PENAWARAN
+Nilai penawaran Rp 425.000.000 termasuk PPN, pengambilan/pengantaran alat, dan penerbitan sertifikat kalibrasi.
+
+4. JANGKA WAKTU
+Pelaksanaan 14 hari kerja sejak SPK terbit; sertifikat kalibrasi diterbitkan maksimal 7 hari kerja setelah pelaksanaan.
+
+5. K3 DAN SLA
+Penerapan SMK3 level 3, prosedur penanganan alat ukur sensitif, dan jaminan rekalibrasi gratis apabila hasil di luar batas toleransi.`,
+      },
+      {
+        nama: "penawaran PT Karya Kalibrasi Indonesia.txt",
+        text: `PENAWARAN PT KARYA KALIBRASI INDONESIA
+JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
+
+1. PENDAHULUAN
+PT Karya Kalibrasi Indonesia menyampaikan penawaran jasa kalibrasi.
+
+2. KOMPETENSI
+Kami memiliki laboratorium kalibrasi dengan akreditasi KAN untuk parameter tekanan dan temperatur; parameter flow dan torsi dilaksanakan di lokasi kilang dengan peralatan acuan tersertifikasi.
+
+3. HARGA
+Nilai penawaran Rp 398.000.000 termasuk PPN.
+
+4. JANGKA WAKTU
+Pelaksanaan 21 hari kerja sejak SPK terbit.
+
+5. K3
+Perusahaan memiliki sertifikat SMK3 level 2 dan prosedur kerja di area kilang sesuai ketentuan.`,
+      },
+      {
+        nama: "penawaran CV Alat Ukur Prima.txt",
+        text: `PENAWARAN CV ALAT UKUR PRIMA
+JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
+
+1. PENDAHULUAN
+CV Alat Ukur Prima mengajukan penawaran jasa kalibrasi alat ukur dan instrumentasi.
+
+2. LINGKUP
+Kami melayani kalibrasi pressure gauge, temperature transmitter, flow meter, dan torque wrench, dilaksanakan secara onsite di lokasi kilang.
+
+3. HARGA
+Nilai penawaran Rp 515.000.000 termasuk PPN.
+
+4. JANGKA WAKTU
+Pelaksanaan 30 hari kerja sejak SPK terbit.
+
+5. CATATAN
+Akreditasi KAN laboratorium sedang dalam proses pengajuan; sertifikat kalibrasi diterbitkan berdasarkan standar acuan tersertifikasi.`,
+      },
+    ],
+    supports: [
+      {
+        nama: "Berita Acara Aanwijzing Kalibrasi 2026.txt",
+        text: `BERITA ACARA AANWIJZING
+JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
+Nomor PR: PR-26-004812
+
+Aanwijzing dilaksanakan secara daring pada Rabu, 25 Maret 2026, pukul 14.00-15.30 WIB, dihadiri 6 perwakilan calon penyedia. Panitia menjelaskan lingkup kalibrasi 60 alat ukur, HPS Rp 450.000.000, dan keharusan akreditasi KAN.
+
+PERTANYAAN DAN JAWABAN:
+1. Apakah sertifikat kalibrasi wajib dari laboratorium terakreditasi KAN? Jawaban: Ya, wajib KAN ISO/IEC 17025.
+2. Kapan sertifikat diterbitkan? Jawaban: Maksimal 7 hari kerja setelah pelaksanaan kalibrasi.
+3. Apakah kalibrasi dapat dilakukan di lokasi kilang? Jawaban: Dapat, selama peralatan acuan tersertifikasi dan kondisi lingkungan memenuhi syarat.`,
+      },
+    ],
+  },
+  {
+    nama_pekerjaan: "Pengadaan Jasa Cleaning Tanki dan Pengelolaan Limbah B3 2026",
+    nomor_pr: "PR-26-004788",
+    status: "evaluasi",
+    rks: {
+      nama: "RKS TOR Jasa Cleaning Tanki dan Pengelolaan Limbah B3 2026.txt",
+      text: `RKS/TOR JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
+NOMOR PR: PR-26-004788
+
+1. PENDAHULUAN
+Jasa cleaning tanki dan pengelolaan limbah B3 tahun 2026 mendukung kesiapan operasional fasilitas penyimpanan produk di terminal.
+
+2. LINGKUP PEKERJAAN
+Pembersihan 2 tanki timbun (T-101 dan T-102) dengan metode water washing serta pengelolaan limbah B3 hasil cleaning oleh perusahaan pengelola limbah yang berizin.
+
+3. PERSYARATAN K3
+Pelaksana wajib melaksanakan gas free test sebelum pekerjaan, memiliki izin kerja (work permit), APD lengkap, serta prosedur tanggap darurat. Limbah B3 wajib ditangani sesuai ketentuan pengelolaan limbah.
+
+4. JADWAL PELAKSANAAN
+Pekerjaan dilaksanakan dalam 60 hari kalender sejak SPK terbit, termasuk mobilisasi dan demobilisasi peralatan.
+
+5. MEKANISME EVALUASI
+Penawaran dievaluasi dalam empat aspek: teknis, legal/administrasi, harga, dan K3/SLA. HPS pengadaan ditetapkan sebesar Rp 2.100.000.000.`,
+    },
+    offers: [
+      {
+        nama: "penawaran PT Sarana Lingkungan Persada.txt",
+        text: `PENAWARAN PT SARANA LINGKUNGAN PERSADA
+JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
+
+1. PENDAHULUAN
+PT Sarana Lingkungan Persada mengajukan penawaran jasa cleaning tanki dan pengelolaan limbah B3.
+
+2. KOMPETENSI
+Kami memiliki izin pengelolaan limbah B3 yang berlaku, pengalaman cleaning tanki di 5 terminal BBM, serta peralatan water washing dan vacuum tanker sendiri.
+
+3. HARGA
+Nilai penawaran Rp 1.985.000.000 termasuk PPN dan biaya pengelolaan limbah B3.
+
+4. JANGKA WAKTU
+Pelaksanaan 45 hari kalender sejak SPK terbit.
+
+5. K3
+Gas free test dilaksanakan oleh personel bersertifikat, work permit lengkap, dan prosedur tanggap darurat teruji.`,
+      },
+      {
+        nama: "penawaran PT Mitra Bumi Sejahtera.txt",
+        text: `PENAWARAN PT MITRA BUMI SEJAHTERA
+JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
+
+1. PENDAHULUAN
+PT Mitra Bumi Sejahtera menyampaikan penawaran jasa cleaning tanki.
+
+2. KOMPETENSI
+Perusahaan memiliki izin pengelolaan limbah B3, 10 kru operasional bersertifikat, dan pengalaman cleaning tanki di kilang dan terminal.
+
+3. HARGA
+Nilai penawaran Rp 2.045.000.000 termasuk PPN.
+
+4. JANGKA WAKTU
+Pelaksanaan 50 hari kalender sejak SPK terbit.
+
+5. K3
+Menerapkan SMK3 level 2, gas free test sebelum dan sesudah pekerjaan, serta pelaporan limbah sesuai ketentuan.`,
+      },
+      {
+        nama: "penawaran CV Energi Bersih Mandiri.txt",
+        text: `PENAWARAN CV ENERGI BERSIH MANDIRI
+JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
+
+1. PENDAHULUAN
+CV Energi Bersih Mandiri mengajukan penawaran jasa cleaning tanki dan pengelolaan limbah B3.
+
+2. LINGKUP
+Pembersihan tanki dengan metode water washing dan penanganan limbah B3 bekerja sama dengan perusahaan pengelola limbah berizin.
+
+3. HARGA
+Nilai penawaran Rp 1.580.000.000 termasuk PPN.
+
+4. JANGKA WAKTU
+Pelaksanaan 60 hari kalender sejak SPK terbit.
+
+5. CATATAN
+Izin pengelolaan limbah B3 perusahaan sedang dalam proses perpanjangan dan ditargetkan terbit sebelum pelaksanaan pekerjaan.`,
+      },
+    ],
+    supports: [
+      {
+        nama: "Berita Acara Aanwijzing Cleaning Tanki 2026.txt",
+        text: `BERITA ACARA AANWIJZING
+JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
+Nomor PR: PR-26-004788
+
+Aanwijzing dilaksanakan secara daring pada Kamis, 2 April 2026, pukul 09.00-11.00 WIB, dihadiri 7 perwakilan calon penyedia. Panitia menjelaskan lingkup cleaning 2 tanki timbun, HPS Rp 2.100.000.000, dan kewajiban gas free test.
+
+PERTANYAAN DAN JAWABAN:
+1. Metode cleaning apa yang diutamakan? Jawaban: Water washing secara cold work untuk meminimalkan risiko.
+2. Bagaimana penanganan limbah B3? Jawaban: Ditimbang, didokumentasikan, dan dilaporkan ke pihak berwenang melalui PU berizin.
+3. Kapan tanki dianggap selesai? Jawaban: Setelah diverifikasi dengan sertifikat gas free yang diterbitkan sebelum tanki diterima kembali.`,
+      },
+    ],
+  },
+  {
+    nama_pekerjaan: "Pengadaan Jasa Transportasi Distribusi BBM Regional Jawa Tengah 2026",
+    nomor_pr: "PR-26-004745",
+    status: "draft",
+    rks: {
+      nama: "RKS TOR Jasa Transportasi Distribusi BBM Regional Jawa Tengah 2026.txt",
+      text: `RKS/TOR JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
+NOMOR PR: PR-26-004745
+
+1. PENDAHULUAN
+Jasa transportasi distribusi BBM regional Jawa Tengah tahun 2026 memastikan pasokan BBM ke SPBU tepat waktu dan aman.
+
+2. LINGKUP PEKERJAAN
+Pengangkutan BBM jenis premium, pertalite, dan solar menggunakan armada tangki kapasitas 5.000-16.000 liter dari terminal ke SPBU di wilayah Jawa Tengah.
+
+3. PERSYARATAN ARMADA DAN DRIVER
+Armada wajib laik jalan, memiliki izin angkutan, dilengkapi GPS tracking dan peralatan keselamatan. Driver wajib memiliki sertifikat pengemudi angkutan BBM dan memahami prosedur tanggap darurat.
+
+4. SLA PENGIRIMAN
+Ketepatan waktu pengiriman minimal 98% per bulan, dengan penggantian armada dalam 24 jam apabila terjadi kendala operasional.
+
+5. MEKANISME EVALUASI
+Penawaran dievaluasi dalam empat aspek: teknis, legal/administrasi, harga, dan K3/SLA. HPS pengadaan ditetapkan sebesar Rp 3.750.000.000.`,
+    },
+    offers: [
+      {
+        nama: "penawaran PT Trans Patra Nusantara.txt",
+        text: `PENAWARAN PT TRANS PATRA NUSANTARA
+JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
+
+1. PENDAHULUAN
+PT Trans Patra Nusantara menyampaikan penawaran jasa transportasi distribusi BBM.
+
+2. ARMADA
+24 unit armada tangki kapasitas 5.000-16.000 liter, seluruhnya laik jalan dengan GPS tracking dan peralatan keselamatan lengkap.
+
+3. HARGA
+Nilai penawaran Rp 3.525.000.000 termasuk PPN untuk periode kontrak 12 bulan.
+
+4. SLA
+Ketepatan pengiriman 99% per bulan, penggantian armada dalam 24 jam, dan driver bersertifikat angkutan BBM.
+
+5. K3
+Penerapan SMK3 level 2 dan prosedur tanggap darurat pada setiap rute pengiriman.`,
+      },
+      {
+        nama: "penawaran PT Mitra Logistik Energi.txt",
+        text: `PENAWARAN PT MITRA LOGISTIK ENERGI
+JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
+
+1. PENDAHULUAN
+PT Mitra Logistik Energi mengajukan penawaran jasa transportasi distribusi BBM.
+
+2. ARMADA
+20 unit armada tangki dengan GPS terintegrasi ke sistem pemantauan panitia dan peralatan keselamatan sesuai ketentuan.
+
+3. HARGA
+Nilai penawaran Rp 3.680.000.000 termasuk PPN untuk periode kontrak 12 bulan.
+
+4. SLA
+Ketepatan pengiriman 98% per bulan dengan dukungan armada cadangan di dua pool regional.
+
+5. K3
+Driver memiliki sertifikat pengemudi angkutan BBM dan pelatihan tanggap darurat berkala.`,
+      },
+      {
+        nama: "penawaran CV Angkutan BBM Sejahtera.txt",
+        text: `PENAWARAN CV ANGKUTAN BBM SEJAHTERA
+JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
+
+1. PENDAHULUAN
+CV Angkutan BBM Sejahtera menyampaikan penawaran jasa transportasi distribusi BBM.
+
+2. ARMADA
+16 unit armada tangki berkapasitas 8.000-16.000 liter dengan izin angkutan yang berlaku.
+
+3. HARGA
+Nilai penawaran Rp 3.140.000.000 termasuk PPN untuk periode kontrak 12 bulan.
+
+4. SLA
+Ketepatan pengiriman 95% per bulan; penggantian armada dilakukan dalam 48 jam.
+
+5. CATATAN
+Sertifikasi pengemudi angkutan BBM sedang dilaksanakan untuk 30% dari total driver.`,
+      },
+    ],
+    supports: [
+      {
+        nama: "Berita Acara Aanwijzing Transportasi BBM 2026.txt",
+        text: `BERITA ACARA AANWIJZING
+JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
+Nomor PR: PR-26-004745
+
+Aanwijzing dilaksanakan secara daring pada Kamis, 9 April 2026, pukul 10.00-12.00 WIB, dihadiri 9 perwakilan calon penyedia. Panitia menjelaskan lingkup distribusi ke 120 SPBU, HPS Rp 3.750.000.000, dan SLA ketepatan pengiriman 98%.
+
+PERTANYAAN DAN JAWABAN:
+1. Apakah armada wajib berlogo perusahaan penyedia? Jawaban: Ya, armada wajib berwarna standar dan berlogo perusahaan.
+2. Siapa yang menanggung pemeliharaan armada? Jawaban: Pemeliharaan armada sepenuhnya tanggung jawab penyedia.
+3. Bagaimana pemantauan perjalanan? Jawaban: Akses GPS diberikan kepada panitia selama masa kontrak.`,
+      },
+    ],
+  },
+];
+
 /* ---------------- helpers ---------------- */
+
+type TenderSeed = {
+  nama_pekerjaan: string;
+  nomor_pr: string;
+  status: string;
+  rks: { nama: string; text: string };
+  offers: { nama: string; text: string }[];
+  supports: { nama: string; text: string }[];
+};
 
 async function upsertDemoUsers() {
   let created = 0;
@@ -265,11 +583,26 @@ async function upsertDemoUsers() {
   log(`akun demo: ${created} baru dibuat, sisanya sudah ada`);
 }
 
-async function seedTenderAndDocs() {
+const TENDER_SEEDS: TenderSeed[] = [
+  {
+    nama_pekerjaan: "Pengadaan Spare Part Pompa Sentrifugal NPK 2026",
+    nomor_pr: "PR-26-004821",
+    status: "aanwijzing",
+    rks: {
+      nama: "RKS TOR Pengadaan Spare Part NPK 2026.txt",
+      text: RKS_TEXT,
+    },
+    offers: OFFERS,
+    supports: SUPPORT_DOCS,
+  },
+  ...EXTRA_TENDERS,
+];
+
+async function seedTenderAndDocs(seed: TenderSeed) {
   const { data: existing } = await supabase
     .from("tenders")
     .select("id, nomor_pr")
-    .eq("nomor_pr", "PR-26-004821")
+    .eq("nomor_pr", seed.nomor_pr)
     .maybeSingle();
 
   let tenderId = existing?.id ?? null;
@@ -278,27 +611,27 @@ async function seedTenderAndDocs() {
     const { data, error } = await supabase
       .from("tenders")
       .insert({
-        nama_pekerjaan: "Pengadaan Spare Part Pompa Sentrifugal NPK 2026",
-        nomor_pr: "PR-26-004821",
-        status: "aanwijzing",
+        nama_pekerjaan: seed.nama_pekerjaan,
+        nomor_pr: seed.nomor_pr,
+        status: seed.status,
       })
       .select("id")
       .single();
     if (error) throw error;
     tenderId = data.id;
-    log("tender contoh dibuat");
+    log(`tender dibuat: ${seed.nama_pekerjaan}`);
   } else {
-    log("tender contoh sudah ada");
+    log(`tender sudah ada: ${seed.nama_pekerjaan}`);
   }
 
   const docs = [
-    { jenis: "rks_tor" as const, nama_file: "RKS TOR Pengadaan Spare Part NPK 2026.txt", konten_text: RKS_TEXT },
-    ...OFFERS.map((o) => ({
+    { jenis: "rks_tor" as const, nama_file: seed.rks.nama, konten_text: seed.rks.text },
+    ...seed.offers.map((o) => ({
       jenis: "penawaran" as const,
       nama_file: o.nama,
       konten_text: o.text,
     })),
-    ...SUPPORT_DOCS.map((o) => ({
+    ...seed.supports.map((o) => ({
       jenis: "lainnya" as const,
       nama_file: o.nama,
       konten_text: o.text,
@@ -361,7 +694,9 @@ async function seedTenderAndDocs() {
 async function main() {
   log("Mulai seeding PATRAMIND...");
   await upsertDemoUsers();
-  await seedTenderAndDocs();
+  for (const seed of TENDER_SEEDS) {
+    await seedTenderAndDocs(seed);
+  }
   log("Selesai. Data demo siap digunakan.");
 }
 
