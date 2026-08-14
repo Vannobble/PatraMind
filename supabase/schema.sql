@@ -30,8 +30,7 @@ create table if not exists tenders (
   nilai_kontrak numeric not null default 0,
   deadline date,
   pic text not null default '',
-  status text not null default 'draft'
-    check (status in ('draft','aanwijzing','evaluasi','final')),
+  status text not null default 'draft',
   created_at timestamp default now()
 );
 
@@ -40,6 +39,13 @@ alter table tenders add column if not exists klien text not null default '';
 alter table tenders add column if not exists nilai_kontrak numeric not null default 0;
 alter table tenders add column if not exists deadline date;
 alter table tenders add column if not exists pic text not null default '';
+
+-- Migrasi idempotent: status baru Draft/Proses/Evaluasi/Diterima/Ditolak
+alter table tenders drop constraint if exists tenders_status_check;
+update tenders set status = 'proses' where status = 'aanwijzing';
+update tenders set status = 'diterima' where status = 'final';
+alter table tenders add constraint tenders_status_check
+  check (status in ('draft','proses','evaluasi','diterima','ditolak'));
 
 -- 4. Dokumen (RKS/TOR, penawaran, dll)
 create table if not exists documents (

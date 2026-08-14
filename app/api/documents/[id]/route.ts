@@ -67,3 +67,32 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { user, profile } = await getApiUser();
+    if (!user) {
+      return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
+    }
+    if (!["panitia", "admin"].includes(profile?.role ?? "")) {
+      return NextResponse.json({ error: "Khusus Panitia/Admin" }, { status: 403 });
+    }
+
+    const { id } = await params;
+    const { error } = await supabaseClient()
+      .from("documents")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+
+    return NextResponse.json({ ok: true, id });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Gagal menghapus dokumen" },
+      { status: 500 }
+    );
+  }
+}

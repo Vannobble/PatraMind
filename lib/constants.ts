@@ -114,9 +114,10 @@ export const TENDER_STATUS_LABELS: Record<
   { label: string; cls: string }
 > = {
   draft: { label: "Draft", cls: "bg-slate-100 text-slate-600 border-slate-200" },
-  aanwijzing: { label: "Aanwijzing", cls: "bg-blue-50 text-blue-700 border-blue-200" },
+  proses: { label: "Proses", cls: "bg-blue-50 text-blue-700 border-blue-200" },
   evaluasi: { label: "Evaluasi", cls: "bg-amber-50 text-amber-700 border-amber-200" },
-  final: { label: "Final", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  diterima: { label: "Diterima", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  ditolak: { label: "Ditolak", cls: "bg-red-50 text-red-700 border-red-200" },
 };
 
 export const AI_MODE = {

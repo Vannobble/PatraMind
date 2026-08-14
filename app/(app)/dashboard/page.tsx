@@ -114,7 +114,7 @@ export default async function DashboardPage() {
 
   const semuaEvals = Object.values(evalsByTender).flat();
   const tenderBerjalan = tenders.filter((t) =>
-    ["aanwijzing", "evaluasi"].includes(t.status)
+    ["proses", "evaluasi"].includes(t.status)
   ).length;
   const tenderDraft = tenders.filter((t) => t.status === "draft").length;
   const evaluasiSelesai = semuaEvals.filter(
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
   ).length;
 
   const nearDeadline = tenders
-    .filter((t) => t.status !== "final")
+    .filter((t) => !["diterima", "ditolak"].includes(t.status))
     .filter((t) => t.deadline)
     .sort(
       (a, b) =>

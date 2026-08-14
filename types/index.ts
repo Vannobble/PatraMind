@@ -1,6 +1,11 @@
 export type Role = "panitia" | "teknis" | "legal" | "k3" | "otorisator" | "admin";
 
-export type TenderStatus = "draft" | "aanwijzing" | "evaluasi" | "final";
+export type TenderStatus =
+  | "draft"
+  | "proses"
+  | "evaluasi"
+  | "diterima"
+  | "ditolak";
 
 export type Aspect = "teknis" | "legal" | "harga" | "k3";
 

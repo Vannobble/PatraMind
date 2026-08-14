@@ -627,7 +627,7 @@ const TENDER_SEEDS: TenderSeed[] = [
     nilai_kontrak: 1250000000,
     deadline: "2026-05-15",
     pic: "Budi Santoso",
-    status: "aanwijzing",
+    status: "proses",
     rks: {
       nama: "RKS TOR Pengadaan Spare Part NPK 2026.txt",
       text: RKS_TEXT,
