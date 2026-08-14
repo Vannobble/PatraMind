@@ -56,12 +56,14 @@ export function keywordRetrieve(
 ): DocChunk[] {
   const tokens = tokenize(question);
   if (tokens.length === 0) return chunks.slice(0, limit);
-  return [...chunks]
+  const hits = [...chunks]
     .map((c) => ({ c, s: scoreChunk(c, tokens) }))
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s)
     .slice(0, limit)
     .map((x) => x.c);
+  if (hits.length > 0) return hits;
+  return chunks.slice(0, limit);
 }
 
 export function firstSentence(text: string, maxLen = 220): string {
