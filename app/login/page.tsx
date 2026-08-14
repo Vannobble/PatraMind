@@ -2,11 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  FileText,
-  MessagesSquare,
-  Sparkles,
-} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ROLE_LABELS } from "@/lib/constants";
 import { Logo } from "@/components/ui/logo";
@@ -77,50 +72,14 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden w-[45%] flex-col justify-between bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
-        <Logo dark />
-        <div>
-          <h1 className="text-4xl font-extrabold leading-tight text-white">
-            One Context.
-            <br />
-            <span className="text-gold-400">Everyone Aligned.</span>
-          </h1>
-          <p className="mt-4 max-w-md text-sm leading-6 text-brand-200">
-            Workspace pengadaan berbasis Context-Aware Agentic AI untuk PT
-            Pertamina Patra Niaga — menggabungkan Context, Dokumen, dan AI
-            Assistant dalam satu alur kerja.
-          </p>
-          <div className="mt-8 space-y-4">
-            {[
-              {
-                icon: FileText,
-                title: "Berita Acara Otomatis",
-                desc: "Generate draft BA Aanwijzing terstruktur dari RKS & catatan sesi",
-              },
-              {
-                icon: MessagesSquare,
-                title: "Evaluasi Kolaboratif",
-                desc: "4 aspek evaluasi paralel dengan AI, lalu dikonsolidasi",
-              },
-              {
-                icon: Sparkles,
-                title: "Smart Doc Assistant",
-                desc: "Tanya dokumen project, jawab dengan sumber yang jelas",
-              },
-            ].map((f) => (
-              <div key={f.title} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-brand-100">
-                  <f.icon className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">{f.title}</p>
-                  <p className="text-xs text-brand-200">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="text-xs text-brand-300">
+      <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+        <Logo dark size="lg" />
+        <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+          PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+          Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+          pengadaan dengan bantuan Context-Aware Agentic AI.
+        </p>
+        <p className="mt-10 text-xs text-brand-300">
           Prototype akademik — FILKOM x Pertamina Patra Niaga
         </p>
       </div>
