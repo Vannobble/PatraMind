@@ -22,14 +22,18 @@ export function EvaluationBoard({
   vendors,
   initialEvals,
   role,
+  initialVendor,
 }: {
   tenderId: string;
   vendors: { nama: string }[];
   initialEvals: Evaluation[];
   role: Role;
+  initialVendor?: string;
 }) {
   const [selectedVendor, setSelectedVendor] = useState(
-    vendors[0]?.nama ?? ""
+    initialVendor && vendors.some((v) => v.nama === initialVendor)
+      ? initialVendor
+      : (vendors[0]?.nama ?? "")
   );
   const [evals, setEvals] = useState<Evaluation[]>(initialEvals);
   const [creating, setCreating] = useState(false);

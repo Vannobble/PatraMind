@@ -6,7 +6,7 @@ import { TenderDetailTabs } from "@/components/prebid/tender-detail-tabs";
 import { Badge } from "@/components/ui/badge";
 import { TENDER_STATUS_LABELS } from "@/lib/constants";
 import { formatRupiah, formatTanggal } from "@/lib/utils";
-import type { BeritaAcara, Evaluation, Role, Tender } from "@/types";
+import type { BeritaAcara, Tender } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -26,23 +26,13 @@ export default async function TenderDetailPage({
     // env belum diatur
   }
 
-  const [
-    { data: tender },
-    { data: docs },
-    { data: evals },
-    { data: bas },
-  ] = await Promise.all([
+  const [{ data: tender }, { data: docs }, { data: bas }] = await Promise.all([
     supabaseClient().from("tenders").select("*").eq("id", id).maybeSingle(),
     supabaseClient()
       .from("documents")
       .select("*")
       .eq("tender_id", id)
       .order("created_at"),
-    supabaseClient()
-      .from("evaluations")
-      .select("*")
-      .eq("tender_id", id)
-      .order("vendor_name"),
     supabaseClient()
       .from("berita_acara")
       .select("*")
@@ -59,15 +49,6 @@ export default async function TenderDetailPage({
     (docs ?? []).find((d) => d.jenis === "rks_tor") ??
     (docs ?? []).find((d) => d.jenis === "lainnya") ??
     null;
-
-  const vendors = (docs ?? [])
-    .filter((d) => d.jenis === "penawaran")
-    .map((d) => {
-      const m = d.nama_file.match(/penawaran[_\-\s]*(.+)/i);
-      const nama = m ? m[1].replace(/\.[a-z]+$/i, "").trim() : d.nama_file;
-      return { nama };
-    })
-    .filter((v) => v.nama.length > 2);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-8">
@@ -122,12 +103,7 @@ export default async function TenderDetailPage({
       <TenderDetailTabs
         tenderId={id}
         rksFileName={rks?.nama_file ?? "RKS/TOR"}
-        initialBa={
-          (bas?.[0] as BeritaAcara | undefined) ?? null
-        }
-        initialEvals={(evals ?? []) as Evaluation[]}
-        vendors={vendors}
-        role={(profile?.role ?? "panitia") as Role}
+        initialBa={(bas?.[0] as BeritaAcara | undefined) ?? null}
       />
     </div>
   );

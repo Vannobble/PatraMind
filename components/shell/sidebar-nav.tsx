@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardList, FolderOpen } from "lucide-react";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  FolderOpen,
+  Handshake,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_GROUPS = [
@@ -16,6 +21,7 @@ const NAV_GROUPS = [
     label: "Operasional",
     items: [
       { href: "/prebid", label: "PreBidManagement", icon: ClipboardList },
+      { href: "/kolaborasi", label: "Kolaborasi", icon: Handshake },
       { href: "/dokumen", label: "Smart-Dokumen", icon: FolderOpen },
     ],
   },

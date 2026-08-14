@@ -1,28 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { FilePenLine, LayoutGrid, Info } from "lucide-react";
+import { FilePenLine, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QnaForm } from "@/components/d5/qna-form";
-import { EvaluationBoard } from "@/components/d6/evaluation-board";
-import type { BaJson, BeritaAcara, Evaluation, QnaNote, Role } from "@/types";
+import type { BaJson, BeritaAcara, QnaNote } from "@/types";
 
 export function TenderDetailTabs({
   tenderId,
   rksFileName,
   initialBa,
-  initialEvals,
-  vendors,
-  role,
 }: {
   tenderId: string;
   rksFileName: string;
   initialBa: BeritaAcara | null;
-  initialEvals: Evaluation[];
-  vendors: { nama: string }[];
-  role: Role;
 }) {
-  const [tab, setTab] = useState<"prebid" | "evaluation">("prebid");
+  const [tab, setTab] = useState<"prebid" | "penilaian">("prebid");
 
   return (
     <div className="space-y-4">
@@ -40,16 +33,16 @@ export function TenderDetailTabs({
           Pre-Bid &amp; Berita Acara
         </button>
         <button
-          onClick={() => setTab("evaluation")}
+          onClick={() => setTab("penilaian")}
           className={cn(
             "flex items-center gap-1.5 rounded-t-lg border-b-2 px-4 py-2.5 text-xs font-semibold transition",
-            tab === "evaluation"
+            tab === "penilaian"
               ? "border-gold-500 text-brand-900"
               : "border-transparent text-slate-400 hover:text-slate-600"
           )}
         >
-          <LayoutGrid className="h-3.5 w-3.5" />
-          Evaluation ({vendors.length})
+          <Info className="h-3.5 w-3.5" />
+          Penilaian Tim
         </button>
       </div>
 
@@ -80,12 +73,17 @@ export function TenderDetailTabs({
           />
         </div>
       ) : (
-        <EvaluationBoard
-          tenderId={tenderId}
-          vendors={vendors}
-          initialEvals={initialEvals}
-          role={role}
-        />
+        <div className="flex items-start gap-3 rounded-xl border border-purple-200 bg-purple-50 px-5 py-4">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-purple-600" />
+          <div className="text-xs leading-6 text-purple-800">
+            <p className="font-bold">Penilaian tim dipindah ke Kolaborasi</p>
+            <p>
+              Evaluasi 4 aspek (Teknis, Legal, Harga, K3) untuk setiap vendor
+              kini dikerjakan di modul <b>Kolaborasi</b> pada menu Operasional —
+              berbasis vendor, lintas tender.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

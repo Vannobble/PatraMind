@@ -11,6 +11,7 @@ import type { Profile } from "@/types";
 const TITLES: Record<string, { eyebrow: string; title: string }> = {
   "/dashboard": { eyebrow: "Procurement Command Center", title: "Dashboard Utama" },
   "/prebid": { eyebrow: "Manajemen Pengadaan", title: "PreBidManagement" },
+  "/kolaborasi": { eyebrow: "Evaluasi Tim", title: "Kolaborasi" },
   "/dokumen": { eyebrow: "Arsip Dokumen", title: "Smart-Dokumen" },
 };
 
@@ -20,6 +21,9 @@ function topTitle(pathname: string) {
   }
   if (pathname.startsWith("/prebid/")) {
     return { eyebrow: "PreBidManagement", title: "Detail PreBid" };
+  }
+  if (pathname.startsWith("/kolaborasi/")) {
+    return { eyebrow: "Kolaborasi", title: "Penilaian Vendor" };
   }
   return TITLES[pathname] ?? { eyebrow: "PATRAMIND", title: "Workspace" };
 }
