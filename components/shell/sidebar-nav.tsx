@@ -53,7 +53,7 @@ export function SidebarNav() {
                   <item.icon
                     className={cn(
                       "h-4 w-4",
-                      active ? "text-amber-300" : "text-brand-300"
+                      active ? "text-gold-300" : "text-brand-300"
                     )}
                   />
                   {item.label}

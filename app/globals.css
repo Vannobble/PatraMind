@@ -17,23 +17,36 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo,
     Consolas, monospace;
 
-  --color-brand-50: #f1f5fa;
-  --color-brand-100: #e4ebf5;
-  --color-brand-200: #c5d4e8;
-  --color-brand-300: #9db6d9;
-  --color-brand-400: #6d94c7;
-  --color-brand-500: #3a76b5;
-  --color-brand-600: #2a63a0;
-  --color-brand-700: #1f4e79;
-  --color-brand-800: #173a5c;
-  --color-brand-900: #0f2a44;
-  --color-brand-950: #0a1b2c;
+  --color-brand-50: #eef3fd;
+  --color-brand-100: #dce6fa;
+  --color-brand-200: #b9cbf5;
+  --color-brand-300: #8dabee;
+  --color-brand-400: #5d84e2;
+  --color-brand-500: #2c5cc9;
+  --color-brand-600: #0139a0;
+  --color-brand-700: #012f86;
+  --color-brand-800: #022568;
+  --color-brand-900: #041c4d;
+  --color-brand-950: #020e2b;
 
-  --color-gold-100: #f6ecd8;
-  --color-gold-200: #f0e0bd;
-  --color-gold-400: #d9af5d;
-  --color-gold-500: #c99a3f;
-  --color-gold-600: #a97f2e;
+  --color-gold-100: #f2f8dd;
+  --color-gold-200: #e4f0b6;
+  --color-gold-300: #c6e27a;
+  --color-gold-400: #9dcc2e;
+  --color-gold-500: #72ac02;
+  --color-gold-600: #5a8801;
+
+  --color-red-50: #fdeeed;
+  --color-red-100: #fbdbdb;
+  --color-red-200: #f8b6b8;
+  --color-red-300: #f4888b;
+  --color-red-400: #f1585c;
+  --color-red-500: #f90209;
+  --color-red-600: #e00d13;
+  --color-red-700: #b40b10;
+  --color-red-800: #8f090d;
+  --color-red-900: #74080b;
+  --color-red-950: #420205;
 }
 
 html,

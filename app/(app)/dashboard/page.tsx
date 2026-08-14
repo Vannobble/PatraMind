@@ -173,7 +173,7 @@ export default async function DashboardPage() {
     ...bas.map((b) => ({
       key: `b-${b.id}`,
       time: b.created_at,
-      dot: "bg-emerald-500",
+      dot: "bg-gold-500",
       node: (
         <>
           Berita Acara dibuat untuk <b>{namaTender(b.tender_id)}</b>
@@ -232,7 +232,7 @@ export default async function DashboardPage() {
               </p>
               <p
                 className={`mt-1 text-[11px] font-medium ${
-                  dokumenMingguIni > 0 ? "text-emerald-600" : "text-slate-400"
+                  dokumenMingguIni > 0 ? "text-gold-600" : "text-slate-400"
                 }`}
               >
                 {dokumenMingguIni > 0
@@ -259,7 +259,7 @@ export default async function DashboardPage() {
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-100 text-gold-600">
                 <Scale className="h-4 w-4" />
               </div>
               <p className="mt-3 font-display text-2xl font-bold text-brand-950">
@@ -270,7 +270,7 @@ export default async function DashboardPage() {
               </p>
               <p
                 className={`mt-1 text-[11px] font-medium ${
-                  evaluasiSelesai > 0 ? "text-emerald-600" : "text-slate-400"
+                  evaluasiSelesai > 0 ? "text-gold-600" : "text-slate-400"
                 }`}
               >
                 {evaluasiSelesai > 0

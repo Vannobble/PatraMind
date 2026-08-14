@@ -83,7 +83,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-extrabold leading-tight text-white">
             One Context.
             <br />
-            <span className="text-brand-300">Everyone Aligned.</span>
+            <span className="text-gold-400">Everyone Aligned.</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-6 text-brand-200">
             Workspace pengadaan berbasis Context-Aware Agentic AI untuk PT
