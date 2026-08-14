@@ -10,12 +10,17 @@ import { cn } from "@/lib/utils";
 export function AIAssistantPanel({
   tenderId,
   aiMode,
+  documentId,
+  compact = false,
 }: {
   tenderId: string;
   aiMode: "openai" | "local";
+  documentId?: string;
+  compact?: boolean;
 }) {
   const { aiOpen, setAiOpen } = useWorkspace();
   const [tab, setTab] = useState<"chat" | "preview">("chat");
+  const chatOnly = Boolean(documentId) || compact;
 
   return (
     <>
@@ -59,12 +64,14 @@ export function AIAssistantPanel({
           {(
             [
               { id: "chat", label: "Chat Dokumen", icon: MessageSquare },
-              { id: "preview", label: "Live Preview", icon: Eye },
+              ...(chatOnly
+                ? []
+                : [{ id: "preview", label: "Live Preview", icon: Eye }]),
             ] as const
           ).map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => setTab(t.id as "chat" | "preview")}
               className={cn(
                 "flex flex-1 items-center justify-center gap-1.5 rounded-t-lg border-b-2 px-2 py-2 text-[11px] font-semibold transition",
                 tab === t.id
@@ -85,7 +92,7 @@ export function AIAssistantPanel({
 
         <div className="min-h-0 flex-1">
           <div className={cn("h-full", tab === "chat" ? "block" : "hidden")}>
-            <ChatPanel tenderId={tenderId} />
+            <ChatPanel tenderId={tenderId} documentId={documentId} />
           </div>
           <div className={cn("h-full", tab === "preview" ? "block" : "hidden")}>
             <LivePreviewPanel />

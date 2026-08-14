@@ -14,17 +14,19 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const tenderId = String(body.tenderId ?? "");
+    const documentId = String(body.documentId ?? "");
     const question = String(body.question ?? "").trim();
 
     if (!tenderId || !question) {
       return NextResponse.json({ error: "Pertanyaan tidak boleh kosong" }, { status: 400 });
     }
 
-    const { answer, sources } = await chatAnswer({ tenderId, question });
+    const { answer, sources } = await chatAnswer({ tenderId, question, documentId: documentId || undefined });
 
     // simpan riwayat (best effort)
     await supabaseClient().from("chat_history").insert({
       tender_id: tenderId,
+      document_id: documentId || null,
       user_id: user.id,
       question,
       answer,

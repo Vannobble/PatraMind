@@ -24,7 +24,7 @@ interface WorkspaceCtx {
   setAiOpen: (v: boolean) => void;
   chat: ChatState;
   setChat: Dispatch<SetStateAction<ChatState>>;
-  sendChat: (tenderId: string, question: string) => Promise<void>;
+  sendChat: (tenderId: string, question: string, documentId?: string) => Promise<void>;
 }
 
 const Ctx = createContext<WorkspaceCtx>({
@@ -47,7 +47,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     error: null,
   });
 
-  async function sendChat(tenderId: string, question: string) {
+  async function sendChat(tenderId: string, question: string, documentId?: string) {
     const q = question.trim();
     if (!q) return;
     setChat((prev) => ({
@@ -64,7 +64,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tenderId, question: q }),
+        body: JSON.stringify({ tenderId, question: q, documentId }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Gagal menjawab");

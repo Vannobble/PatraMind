@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     }
 
     if (action === "approve") {
-      if (profile.role !== "otorisator") {
+      if (!["otorisator", "admin"].includes(profile.role)) {
         return NextResponse.json({ error: "Hanya Otorisator yang dapat menyetujui" }, { status: 403 });
       }
       const evaluationId = String(body.evaluationId ?? "");

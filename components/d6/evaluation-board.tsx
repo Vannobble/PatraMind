@@ -77,7 +77,7 @@ export function EvaluationBoard({
 
   function canEdit(aspect: Aspect): boolean {
     const required = ASPECT_META[aspect].role;
-    return role === required;
+    return role === required || role === "admin";
   }
 
   function onSaved(aspect: Aspect, input: AspectInput) {
@@ -206,8 +206,8 @@ export function EvaluationBoard({
             evaluationId={current.id}
             consensus={current.consensus_result}
             isFinal={current.status === "final"}
-            canGenerate={role === "panitia" || role === "otorisator"}
-            canApprove={role === "otorisator"}
+            canGenerate={["panitia", "otorisator", "admin"].includes(role)}
+            canApprove={["otorisator", "admin"].includes(role)}
             onConsensus={onConsensus}
             onApproved={onApproved}
           />

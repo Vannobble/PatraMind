@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
-    if (profile?.role !== "panitia") {
+    if (!["panitia", "admin"].includes(profile?.role ?? "")) {
       return NextResponse.json({ error: "Hanya Panitia yang dapat generate BA" }, { status: 403 });
     }
 

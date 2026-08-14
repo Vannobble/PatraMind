@@ -4,36 +4,22 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   FileText,
-  GitMerge,
   MessagesSquare,
-  ShieldCheck,
-  UserRound,
-  LockKeyhole,
-  ArrowRight,
   Sparkles,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { DEMO_ACCOUNTS, ROLE_LABELS } from "@/lib/constants";
+import { ROLE_LABELS } from "@/lib/constants";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import type { Role } from "@/types";
-
-const ROLE_ICONS: Record<Role, typeof UserRound> = {
-  panitia: ShieldCheck,
-  teknis: FileText,
-  legal: GitMerge,
-  k3: Sparkles,
-  otorisator: LockKeyhole,
-};
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [missingEnv, setMissingEnv] = useState(false);
 
   const supabaseConfigured =
@@ -41,8 +27,8 @@ export default function LoginPage() {
     Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
     Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-  async function doLogin(mail: string, pass: string, label: string) {
-    setBusy(label);
+  async function doLogin(mail: string, pass: string) {
+    setBusy(true);
     setError(null);
     try {
       const supabase = createClient();
@@ -63,7 +49,7 @@ export default function LoginPage() {
     } catch {
       setMissingEnv(true);
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   }
 
@@ -161,52 +147,17 @@ export default function LoginPage() {
             Masuk ke Workspace
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Mode demo — pilih peran untuk langsung masuk sebagai peran tersebut
+            Gunakan akun yang diberikan panitia ({ROLE_LABELS.panitia},{" "}
+            {ROLE_LABELS.teknis}, {ROLE_LABELS.otorisator}, atau{" "}
+            {ROLE_LABELS.admin})
           </p>
-
-          <div className="mt-5 space-y-2">
-            {DEMO_ACCOUNTS.map((acc) => {
-              const Icon = ROLE_ICONS[acc.role];
-              return (
-                <button
-                  key={acc.role}
-                  disabled={busy !== null}
-                  onClick={() => doLogin(acc.email, acc.password, acc.role)}
-                  className="group flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition hover:border-brand-300 hover:shadow disabled:opacity-60"
-                >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                    {busy === acc.role ? (
-                      <Spinner className="h-4 w-4" />
-                    ) : (
-                      <Icon className="h-4 w-4" />
-                    )}
-                  </span>
-                  <span className="flex-1">
-                    <span className="block text-sm font-semibold text-slate-900">
-                      {ROLE_LABELS[acc.role]}
-                    </span>
-                    <span className="block text-xs text-slate-500">
-                      {acc.deskripsi}
-                    </span>
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600" />
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs text-slate-400">atau login manual</span>
-            <span className="h-px flex-1 bg-slate-200" />
-          </div>
 
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (email && password) doLogin(email, password, "manual");
+              if (email && password) doLogin(email, password);
             }}
-            className="space-y-3"
+            className="mt-6 space-y-3"
           >
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
@@ -233,15 +184,11 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={busy !== null}
+              disabled={busy}
               variant="primary"
               size="lg"
             >
-              {busy === "manual" ? (
-                <Spinner className="h-4 w-4" />
-              ) : (
-                "Masuk"
-              )}
+              {busy ? <Spinner className="h-4 w-4" /> : "Masuk"}
             </Button>
           </form>
         </div>

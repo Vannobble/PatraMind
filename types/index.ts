@@ -1,4 +1,4 @@
-export type Role = "panitia" | "teknis" | "legal" | "k3" | "otorisator";
+export type Role = "panitia" | "teknis" | "legal" | "k3" | "otorisator" | "admin";
 
 export type TenderStatus = "draft" | "aanwijzing" | "evaluasi" | "final";
 
@@ -19,6 +19,10 @@ export interface Tender {
   id: string;
   nama_pekerjaan: string;
   nomor_pr: string;
+  klien?: string;
+  nilai_kontrak?: number;
+  deadline?: string | null;
+  pic?: string;
   status: TenderStatus;
   created_at?: string;
 }

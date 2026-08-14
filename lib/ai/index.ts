@@ -189,8 +189,14 @@ Pertanyaan pengguna: {user_question}`;
 export async function chatAnswer(params: {
   tenderId: string;
   question: string;
+  documentId?: string;
 }): Promise<{ answer: string; sources: string[] }> {
-  const chunks = await retrieveChunks(params.tenderId, params.question, 4);
+  const chunks = await retrieveChunks(
+    params.tenderId,
+    params.question,
+    4,
+    params.documentId
+  );
 
   if (aiMode() === "local") {
     return mockChatAnswer({ question: params.question, chunks });

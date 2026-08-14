@@ -12,19 +12,34 @@ create table if not exists profiles (
   id uuid references auth.users primary key,
   full_name text not null default '',
   role text not null default 'panitia'
-    check (role in ('panitia','teknis','legal','k3','otorisator')),
+    check (role in ('panitia','teknis','legal','k3','otorisator','admin')),
   created_at timestamp default now()
 );
+
+-- Migrasi idempotent: perluas role dengan 'admin'
+alter table profiles drop constraint if exists profiles_role_check;
+alter table profiles add constraint profiles_role_check
+  check (role in ('panitia','teknis','legal','k3','otorisator','admin'));
 
 -- 3. Tender/project
 create table if not exists tenders (
   id uuid primary key default gen_random_uuid(),
   nama_pekerjaan text not null,
   nomor_pr text not null default '',
+  klien text not null default '',
+  nilai_kontrak numeric not null default 0,
+  deadline date,
+  pic text not null default '',
   status text not null default 'draft'
     check (status in ('draft','aanwijzing','evaluasi','final')),
   created_at timestamp default now()
 );
+
+-- Migrasi idempotent: kolom tambahan ala PATRAMINE
+alter table tenders add column if not exists klien text not null default '';
+alter table tenders add column if not exists nilai_kontrak numeric not null default 0;
+alter table tenders add column if not exists deadline date;
+alter table tenders add column if not exists pic text not null default '';
 
 -- 4. Dokumen (RKS/TOR, penawaran, dll)
 create table if not exists documents (
@@ -82,12 +97,16 @@ create table if not exists evaluations (
 create table if not exists chat_history (
   id uuid primary key default gen_random_uuid(),
   tender_id uuid references tenders(id) on delete cascade,
+  document_id uuid references documents(id) on delete cascade,
   user_id uuid references profiles(id),
   question text not null,
   answer text not null,
   sources jsonb not null default '[]'::jsonb,
   created_at timestamp default now()
 );
+
+-- Migrasi idempotent: konteks chat per dokumen
+alter table chat_history add column if not exists document_id uuid references documents(id) on delete cascade;
 
 -- 9. Fungsi pencarian vektor (RAG D8)
 create or replace function match_documents(

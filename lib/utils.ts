@@ -38,6 +38,15 @@ export function todayIdn(): string {
   });
 }
 
+export function formatRupiah(n?: number | null): string {
+  if (n === null || n === undefined || isNaN(Number(n))) return "Rp 0";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(n));
+}
+
 export function waktuRelatif(iso?: string): string {
   if (!iso) return "-";
   const diff = Date.now() - new Date(iso).getTime();

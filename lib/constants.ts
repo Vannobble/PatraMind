@@ -9,6 +9,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   legal: "Legal",
   k3: "K3 / HSSE",
   otorisator: "Otorisator",
+  admin: "Admin",
 };
 
 export const ROLE_DESCRIPTIONS: Record<Role, string> = {
@@ -17,6 +18,7 @@ export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   legal: "Menilai kelengkapan dokumen legal & administrasi",
   k3: "Menilai aspek K3, lingkungan & SLA",
   otorisator: "Menyetujui hasil evaluasi final",
+  admin: "Mengatur semua — akses penuh seluruh fitur",
 };
 
 export const DEMO_ACCOUNTS: {
@@ -26,6 +28,13 @@ export const DEMO_ACCOUNTS: {
   name: string;
   deskripsi: string;
 }[] = [
+  {
+    role: "admin",
+    email: "admin@patramind.demo",
+    password: "patramind123",
+    name: "Admin Utama",
+    deskripsi: "Mengatur semua — akses penuh seluruh fitur",
+  },
   {
     role: "panitia",
     email: "panitia@patramind.demo",
@@ -39,20 +48,6 @@ export const DEMO_ACCOUNTS: {
     password: "patramind123",
     name: "Rina Kartika",
     deskripsi: "Evaluasi aspek teknis penawaran",
-  },
-  {
-    role: "legal",
-    email: "legal@patramind.demo",
-    password: "patramind123",
-    name: "Dewi Lestari",
-    deskripsi: "Evaluasi aspek legal & administrasi",
-  },
-  {
-    role: "k3",
-    email: "k3@patramind.demo",
-    password: "patramind123",
-    name: "Agus Wijaya",
-    deskripsi: "Evaluasi aspek K3 / HSSE & SLA",
   },
   {
     role: "otorisator",

@@ -14,7 +14,13 @@ const SUGGESTIONS = [
   "Berapa batas waktu pengiriman barang?",
 ];
 
-export function ChatPanel({ tenderId }: { tenderId: string }) {
+export function ChatPanel({
+  tenderId,
+  documentId,
+}: {
+  tenderId: string;
+  documentId?: string;
+}) {
   const { chat, setChat, sendChat } = useWorkspace();
   const { messages, input, loading, error } = chat;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -28,7 +34,7 @@ export function ChatPanel({ tenderId }: { tenderId: string }) {
 
   async function send(text?: string) {
     if (loading) return;
-    await sendChat(tenderId, text ?? input);
+    await sendChat(tenderId, text ?? input, documentId);
   }
 
   return (

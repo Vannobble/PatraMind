@@ -58,12 +58,20 @@ export function chunkDocument(
 
 /* ---------------- Retrieval ---------------- */
 
-export async function fetchChunks(tenderId: string): Promise<DocChunk[]> {
-  const { data, error } = await supabaseClient()
+export async function fetchChunks(
+  tenderId: string,
+  documentId?: string
+): Promise<DocChunk[]> {
+  let query = supabaseClient()
     .from("document_chunks")
     .select("id, tender_id, content, sumber")
-    .eq("tender_id", tenderId)
     .limit(400);
+  if (documentId) {
+    query = query.eq("document_id", documentId);
+  } else {
+    query = query.eq("tender_id", tenderId);
+  }
+  const { data, error } = await query;
   if (error) throw new Error(`Gagal memuat chunks: ${error.message}`);
   return (data ?? []) as DocChunk[];
 }
@@ -71,11 +79,12 @@ export async function fetchChunks(tenderId: string): Promise<DocChunk[]> {
 export async function retrieveChunks(
   tenderId: string,
   question: string,
-  limit = 3
+  limit = 3,
+  documentId?: string
 ): Promise<DocChunk[]> {
-  const chunks = await fetchChunks(tenderId);
+  const chunks = await fetchChunks(tenderId, documentId);
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.OPENAI_API_KEY || documentId) {
     return keywordRetrieve(chunks, question, limit);
   }
 

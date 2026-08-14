@@ -4,18 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Textarea, Select, Label } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 
-export function CreateTenderDialog() {
+export function CreateDocumentDialog({
+  tenders,
+}: {
+  tenders: { id: string; nama_pekerjaan: string }[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [nama, setNama] = useState("");
-  const [nomorPr, setNomorPr] = useState("");
-  const [klien, setKlien] = useState("");
-  const [nilaiKontrak, setNilaiKontrak] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [pic, setPic] = useState("");
+  const [jenis, setJenis] = useState("lainnya");
+  const [tenderId, setTenderId] = useState(tenders[0]?.id ?? "");
+  const [isi, setIsi] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,30 +26,24 @@ export function CreateTenderDialog() {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/tenders", {
+      const res = await fetch("/api/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nama_pekerjaan: nama,
-          nomor_pr: nomorPr,
-          klien,
-          pic,
-          deadline: deadline || null,
-          nilai_kontrak: Number(nilaiKontrak.replace(/[^\d]/g, "")) || 0,
+          nama_file: nama,
+          jenis,
+          tenderId,
+          konten_text: isi,
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Gagal membuat tender");
+      if (!res.ok) throw new Error(json.error ?? "Gagal membuat dokumen");
       setOpen(false);
       setNama("");
-      setNomorPr("");
-      setKlien("");
-      setNilaiKontrak("");
-      setDeadline("");
-      setPic("");
-      router.refresh();
+      setIsi("");
+      router.push(`/dokumen/${json.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal membuat tender");
+      setError(err instanceof Error ? err.message : "Gagal membuat dokumen");
     } finally {
       setBusy(false);
     }
@@ -56,7 +52,7 @@ export function CreateTenderDialog() {
   return (
     <>
       <Button variant="primary" onClick={() => setOpen(true)}>
-        <Plus /> Buat Tender
+        <Plus /> Tambah Dokumen
       </Button>
 
       {open && (
@@ -64,7 +60,7 @@ export function CreateTenderDialog() {
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-900">
-                Buat Tender Baru
+                Tambah Dokumen Baru
               </h3>
               <button
                 onClick={() => setOpen(false)}
@@ -75,63 +71,53 @@ export function CreateTenderDialog() {
             </div>
             <form onSubmit={create} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="nama">Nama Pekerjaan</Label>
+                <Label htmlFor="nama">Nama File</Label>
                 <Input
                   id="nama"
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
-                  placeholder="Contoh: Pengadaan Spare Part Pompa NPK 2026"
+                  placeholder="Contoh: RKS TOR Pengadaan Jasa Survey 2026.txt"
                   required
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr">Nomor PR</Label>
-                  <Input
-                    id="pr"
-                    value={nomorPr}
-                    onChange={(e) => setNomorPr(e.target.value)}
-                    placeholder="Contoh: PR-26-005132"
+                  <Label htmlFor="jenis">Kategori</Label>
+                  <Select
+                    id="jenis"
+                    value={jenis}
+                    onChange={(e) => setJenis(e.target.value)}
+                  >
+                    <option value="rks_tor">RKS / TOR</option>
+                    <option value="penawaran">Penawaran</option>
+                    <option value="lainnya">Lainnya / Pendukung</option>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="tender">Lokasi Simpan (Tender)</Label>
+                  <Select
+                    id="tender"
+                    value={tenderId}
+                    onChange={(e) => setTenderId(e.target.value)}
                     required
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="klien">Klien</Label>
-                  <Input
-                    id="klien"
-                    value={klien}
-                    onChange={(e) => setKlien(e.target.value)}
-                    placeholder="Contoh: PT Pertamina Patra Niaga"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="nilai">Nilai Kontrak (Rp)</Label>
-                  <Input
-                    id="nilai"
-                    type="text"
-                    inputMode="numeric"
-                    value={nilaiKontrak}
-                    onChange={(e) => setNilaiKontrak(e.target.value)}
-                    placeholder="Contoh: 250000000"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="deadline">Deadline</Label>
-                  <Input
-                    id="deadline"
-                    type="date"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                  />
+                  >
+                    {tenders.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.nama_pekerjaan}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="pic">PIC</Label>
-                <Input
-                  id="pic"
-                  value={pic}
-                  onChange={(e) => setPic(e.target.value)}
-                  placeholder="Contoh: Panitia Pengadaan"
+                <Label htmlFor="isi">Isi Dokumen</Label>
+                <Textarea
+                  id="isi"
+                  value={isi}
+                  onChange={(e) => setIsi(e.target.value)}
+                  placeholder={"RKS/TOR ...\n\n1. PENDAHULUAN\n..."}
+                  rows={8}
+                  required
                 />
               </div>
               {error && (

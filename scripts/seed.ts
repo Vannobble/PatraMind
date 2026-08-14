@@ -226,6 +226,10 @@ const EXTRA_TENDERS: TenderSeed[] = [
   {
     nama_pekerjaan: "Pengadaan Jasa Kalibrasi Alat Ukur dan Instrumentasi 2026",
     nomor_pr: "PR-26-004812",
+    klien: "Unit Operasional & Laboratorium — Pertamina Patra Niaga",
+    nilai_kontrak: 450000000,
+    deadline: "2026-06-10",
+    pic: "Rina Kartika",
     status: "evaluasi",
     rks: {
       nama: "RKS TOR Jasa Kalibrasi Alat Ukur dan Instrumentasi 2026.txt",
@@ -328,6 +332,10 @@ PERTANYAAN DAN JAWABAN:
   {
     nama_pekerjaan: "Pengadaan Jasa Cleaning Tanki dan Pengelolaan Limbah B3 2026",
     nomor_pr: "PR-26-004788",
+    klien: "Terminal BBM Cilacap — Pertamina Patra Niaga",
+    nilai_kontrak: 2100000000,
+    deadline: "2026-07-01",
+    pic: "Agus Wijaya",
     status: "evaluasi",
     rks: {
       nama: "RKS TOR Jasa Cleaning Tanki dan Pengelolaan Limbah B3 2026.txt",
@@ -430,6 +438,10 @@ PERTANYAAN DAN JAWABAN:
   {
     nama_pekerjaan: "Pengadaan Jasa Transportasi Distribusi BBM Regional Jawa Tengah 2026",
     nomor_pr: "PR-26-004745",
+    klien: "Regional Jawa Tengah — Pertamina Patra Niaga",
+    nilai_kontrak: 3750000000,
+    deadline: "2026-06-30",
+    pic: "Siti Rahayu",
     status: "draft",
     rks: {
       nama: "RKS TOR Jasa Transportasi Distribusi BBM Regional Jawa Tengah 2026.txt",
@@ -536,6 +548,10 @@ PERTANYAAN DAN JAWABAN:
 type TenderSeed = {
   nama_pekerjaan: string;
   nomor_pr: string;
+  klien: string;
+  nilai_kontrak: number;
+  deadline: string;
+  pic: string;
   status: string;
   rks: { nama: string; text: string };
   offers: { nama: string; text: string }[];
@@ -581,12 +597,36 @@ async function upsertDemoUsers() {
     }
   }
   log(`akun demo: ${created} baru dibuat, sisanya sudah ada`);
+
+  const demoEmails = new Set(DEMO_ACCOUNTS.map((a) => a.email.toLowerCase()));
+  let pruned = 0;
+  for (const u of existing?.users ?? []) {
+    if (
+      u.email &&
+      u.email.toLowerCase().endsWith("@patramind.demo") &&
+      !demoEmails.has(u.email.toLowerCase())
+    ) {
+      try {
+        await supabase.from("profiles").delete().eq("id", u.id);
+      } catch {
+        // lanjut hapus user
+      }
+      const { error } = await supabase.auth.admin.deleteUser(u.id);
+      if (!error) pruned++;
+      else log(`  ! gagal hapus akun lama ${u.email}: ${error.message}`);
+    }
+  }
+  if (pruned > 0) log(`akun lama dihapus: ${pruned}`);
 }
 
 const TENDER_SEEDS: TenderSeed[] = [
   {
     nama_pekerjaan: "Pengadaan Spare Part Pompa Sentrifugal NPK 2026",
     nomor_pr: "PR-26-004821",
+    klien: "Unit Produksi NPK — Pertamina Patra Niaga",
+    nilai_kontrak: 1250000000,
+    deadline: "2026-05-15",
+    pic: "Budi Santoso",
     status: "aanwijzing",
     rks: {
       nama: "RKS TOR Pengadaan Spare Part NPK 2026.txt",
@@ -613,6 +653,10 @@ async function seedTenderAndDocs(seed: TenderSeed) {
       .insert({
         nama_pekerjaan: seed.nama_pekerjaan,
         nomor_pr: seed.nomor_pr,
+        klien: seed.klien,
+        nilai_kontrak: seed.nilai_kontrak,
+        deadline: seed.deadline,
+        pic: seed.pic,
         status: seed.status,
       })
       .select("id")
@@ -621,6 +665,16 @@ async function seedTenderAndDocs(seed: TenderSeed) {
     tenderId = data.id;
     log(`tender dibuat: ${seed.nama_pekerjaan}`);
   } else {
+    const { error } = await supabase
+      .from("tenders")
+      .update({
+        klien: seed.klien,
+        nilai_kontrak: seed.nilai_kontrak,
+        deadline: seed.deadline,
+        pic: seed.pic,
+      })
+      .eq("id", tenderId);
+    if (error) throw error;
     log(`tender sudah ada: ${seed.nama_pekerjaan}`);
   }
 
