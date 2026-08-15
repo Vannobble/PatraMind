@@ -547,6 +547,88 @@ PERTANYAAN DAN JAWABAN:
       },
     ],
   },
+  {
+    nama_pekerjaan: "Pengadaan Lomba KRTI TD 2026",
+    nomor_pr: "PR-14-2026",
+    klien: "Tim Development (TD) — Pertamina Patra Niaga",
+    nilai_kontrak: 350000000,
+    deadline: "2026-08-30",
+    pic: "Andi Prasetyo",
+    status: "evaluasi",
+    ringkasan:
+      "Pengadaan penyelenggaraan Lomba KRTI (Kreativitas, Riset, dan Teknologi Inovasi) TD 2026 senilai Rp350 juta: penyediaan venue, perangkat lomba, juri, dan produksi acara. Tahap evaluasi penawaran di Kolaborasi dengan 3 vendor penyedia jasa event.",
+    rks: {
+      nama: "RKS TOR Lomba KRTI TD 2026.txt",
+      text: `RKS/TOR LOMBA KRTI TD 2026
+NOMOR PR: PR-14-2026
+
+1. PENDAHULUAN
+Lomba Kreativitas, Riset, dan Teknologi Inovasi (KRTI) Tim Development 2026 diselenggarakan untuk mendorong inovasi teknologi di lingkungan perusahaan.
+
+2. LINGKUP PEKERJAAN
+Penyediaan venue lomba (3 hari), perangkat presentasi dan pameran, fasilitas juri, dokumentasi, serta produksi acara pembukaan dan penutupan.
+
+3. PERSYARATAN
+Penyedia wajib memiliki pengalaman minimal 3 event berskala nasional, sertifikasi keamanan pangan untuk catering, dan tim produksi minimal 10 orang.
+
+4. MEKANISME EVALUASI
+Penawaran dievaluasi dalam empat aspek: teknis, legal/administrasi, harga, dan K3/SLA. HPS pengadaan ditetapkan sebesar Rp 350.000.000.`,
+    },
+    offers: [
+      {
+        nama: "penawaran PT Eventora Kreasi Nusantara.txt",
+        text: `PENAWARAN PT EVENTORA KREASI NUSANTARA
+LOMBA KRTI TD 2026
+
+1. PENDAHULUAN
+PT Eventora Kreasi Nusantara menyampaikan penawaran penyelenggaraan Lomba KRTI TD 2026.
+
+2. SPESIFIKASI TEKNIS
+Berpengalaman 5 event nasional. Menyediakan venue utama kapasitas 500 orang, 20 booth pameran, LED screen 6x3 meter, sistem sound 32 channel, dan dokumentasi 4K.
+
+3. PENAWARAN HARGA
+Total penawaran Rp 318.000.000 termasuk PPN, dengan rincian venue, produksi, juri, dan catering.
+
+4. K3 DAN SLA
+Sertifikasi K3 event, asuransi peserta, dan tim produksi 12 orang selama 3 hari pelaksanaan.`,
+      },
+      {
+        nama: "penawaran CV Mitra Lomba Indonesia.txt",
+        text: `PENAWARAN CV MITRA LOMBA INDONESIA
+LOMBA KRTI TD 2026
+
+1. PENDAHULUAN
+CV Mitra Lomba Indonesia menyampaikan penawaran penyelenggaraan Lomba KRTI TD 2026.
+
+2. SPESIFIKASI TEKNIS
+Berpengalaman 3 event nasional. Menyediakan venue kapasitas 400 orang, 15 booth, proyektor 10K lumen, dan sistem sound 16 channel.
+
+3. PENAWARAN HARGA
+Total penawaran Rp 285.000.000 termasuk PPN.
+
+4. K3 DAN SLA
+Memiliki izin usaha event organizer dan asuransi acara. Tim produksi 10 orang.`,
+      },
+      {
+        nama: "penawaran PT Cipta Panggung Nusantara.txt",
+        text: `PENAWARAN PT CIPTA PANGGUNG NUSANTARA
+LOMBA KRTI TD 2026
+
+1. PENDAHULUAN
+PT Cipta Panggung Nusantara menyampaikan penawaran penyelenggaraan Lomba KRTI TD 2026.
+
+2. SPESIFIKASI TEKNIS
+Berpengalaman 7 event nasional dan 2 event internasional. Menyediakan venue eksklusif kapasitas 600 orang, 25 booth, LED screen 8x4 meter, panggung 12x8 meter, dan live streaming.
+
+3. PENAWARAN HARGA
+Total penawaran Rp 342.000.000 termasuk PPN.
+
+4. K3 DAN SLA
+Sertifikasi K3 event, protokol keamanan lengkap, dan SLA respon 1x24 jam.`,
+      },
+    ],
+    supports: [],
+  },
 ];
 
 /* ---------------- helpers ---------------- */
@@ -750,6 +832,33 @@ async function seedTenderAndDocs(seed: TenderSeed) {
       log(`  chunk RAG dibuat: ${rows.length} chunk`);
     } else {
       log(`  chunk RAG sudah ada (${count})`);
+    }
+  }
+
+  // Evaluasi draft otomatis untuk tender berstatus evaluasi
+  if (seed.status === "evaluasi") {
+    const { data: existingEvals } = await supabase
+      .from("evaluations")
+      .select("vendor_name")
+      .eq("tender_id", tenderId);
+    const done = new Set(
+      (existingEvals ?? []).map((e) => e.vendor_name.toLowerCase())
+    );
+    const newEvals = seed.offers
+      .map((o) => {
+        const m = o.nama.match(/penawaran[_\-\s]*(.+)/i);
+        const nama = m ? m[1].replace(/\.[a-z]+$/i, "").trim() : o.nama;
+        return nama;
+      })
+      .filter((nama) => nama.length > 2 && !done.has(nama.toLowerCase()))
+      .map((nama) => ({ tender_id: tenderId, vendor_name: nama, status: "draft" }));
+
+    if (newEvals.length > 0) {
+      const { error } = await supabase.from("evaluations").insert(newEvals);
+      if (error) throw error;
+      log(`evaluasi draft dibuat: ${newEvals.length} vendor`);
+    } else {
+      log("evaluasi sudah ada untuk semua vendor");
     }
   }
 }

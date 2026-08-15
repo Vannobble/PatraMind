@@ -46,6 +46,45 @@ export async function PATCH(
       .single();
     if (error) throw error;
 
+    // Otomatisasi: saat tender masuk fase Evaluasi, buat evaluasi draft
+    // untuk setiap vendor penawaran yang belum dinilai
+    if (status === "evaluasi") {
+      const { data: offers } = await supabaseClient()
+        .from("documents")
+        .select("nama_file")
+        .eq("tender_id", id)
+        .eq("jenis", "penawaran");
+      const { data: existingEvals } = await supabaseClient()
+        .from("evaluations")
+        .select("vendor_name")
+        .eq("tender_id", id);
+
+      const done = new Set(
+        (existingEvals ?? []).map((e) => e.vendor_name.toLowerCase())
+      );
+      const rows = ((offers ?? []) as { nama_file: string }[])
+        .map((d) => {
+          const m = d.nama_file.match(/penawaran[_\-\s]*(.+)/i);
+          const nama = m
+            ? m[1].replace(/\.[a-z]+$/i, "").trim()
+            : d.nama_file;
+          return nama;
+        })
+        .filter((nama) => nama.length > 2 && !done.has(nama.toLowerCase()))
+        .map((nama) => ({
+          tender_id: id,
+          vendor_name: nama,
+          status: "draft",
+        }));
+
+      if (rows.length > 0) {
+        const { error: evalError } = await supabaseClient()
+          .from("evaluations")
+          .insert(rows);
+        if (evalError) throw evalError;
+      }
+    }
+
     return NextResponse.json({ ok: true, id: data.id, status: data.status });
   } catch (err) {
     return NextResponse.json(
