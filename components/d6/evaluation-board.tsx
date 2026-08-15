@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, PlayCircle, Info } from "lucide-react";
+import { PlayCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
@@ -15,33 +15,25 @@ import type {
   Evaluation,
   Role,
 } from "@/types";
-import { cn } from "@/lib/utils";
 
 export function EvaluationBoard({
   tenderId,
-  vendors,
   initialEvals,
   role,
   initialVendor,
 }: {
   tenderId: string;
-  vendors: { nama: string }[];
   initialEvals: Evaluation[];
   role: Role;
   initialVendor?: string;
 }) {
-  const [selectedVendor, setSelectedVendor] = useState(
-    initialVendor && vendors.some((v) => v.nama === initialVendor)
-      ? initialVendor
-      : (vendors[0]?.nama ?? "")
-  );
   const [evals, setEvals] = useState<Evaluation[]>(initialEvals);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const current: Evaluation | undefined = evals.find(
-    (e) => e.vendor_name === selectedVendor
-  );
+  const current: Evaluation | undefined =
+    evals.find((e) => e.vendor_name === initialVendor) ?? evals[0];
+  const selectedVendor = current?.vendor_name ?? initialVendor ?? "";
 
   async function createEvaluation() {
     setCreating(true);
@@ -127,36 +119,7 @@ export function EvaluationBoard({
         </div>
       </div>
 
-      {/* Pilih vendor */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
-          <Building2 className="h-4 w-4" /> Penawaran vendor:
-        </span>
-        {vendors.map((v) => (
-          <button
-            key={v.nama}
-            onClick={() => setSelectedVendor(v.nama)}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-semibold transition",
-              selectedVendor === v.nama
-                ? "border-brand-700 bg-brand-800 text-white shadow-sm"
-                : "border-slate-300 bg-white text-slate-600 hover:border-brand-300 hover:text-brand-700"
-            )}
-          >
-            {v.nama}
-          </button>
-        ))}
-      </div>
-
-      {!selectedVendor && (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-xs text-slate-500">
-          Tidak ada dokumen penawaran untuk tender ini — jalankan{" "}
-          <code className="rounded bg-white px-1">npm run seed</code> untuk
-          memuat vendor contoh.
-        </div>
-      )}
-
-      {selectedVendor && !current && (
+      {!current && selectedVendor && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
           <p className="text-sm font-semibold text-slate-700">
             Evaluasi {selectedVendor} belum dimulai

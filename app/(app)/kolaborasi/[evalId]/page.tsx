@@ -56,13 +56,6 @@ export default async function KolaborasiDetailPage({
 
   const t = (tender as Tender | null) ?? null;
   const docRows = (docs ?? []) as DocumentRow[];
-  const vendors = docRows
-    .filter((d) => d.jenis === "penawaran")
-    .map((d) => {
-      const m = d.nama_file.match(/penawaran[_\-\s]*(.+)/i);
-      const nama = m ? m[1].replace(/\.[a-z]+$/i, "").trim() : d.nama_file;
-      return { nama };
-    });
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-8">
@@ -101,7 +94,6 @@ export default async function KolaborasiDetailPage({
       <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
         <EvaluationBoard
           tenderId={e.tender_id}
-          vendors={vendors.length > 0 ? vendors : [{ nama: e.vendor_name }]}
           initialEvals={(evals ?? []) as Evaluation[]}
           role={(profile?.role ?? "panitia") as Role}
           initialVendor={e.vendor_name}
