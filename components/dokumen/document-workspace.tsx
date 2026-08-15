@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  ArrowLeft,
   Check,
   FileText,
   Pencil,
@@ -66,7 +67,9 @@ export function DocumentWorkspace({
             fallback="/dokumen"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-gold-400 hover:text-brand-800"
             title="Kembali ke Smart-Dokumen"
-          />
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </BackButton>
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
             <FileText className="h-4.5 w-4.5" />
           </span>
