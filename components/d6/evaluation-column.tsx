@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea, Select } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { ASPECT_META, ASPECT_STATUS_LABELS, ROLE_LABELS } from "@/lib/constants";
+import { ASPECT_META, ROLE_LABELS } from "@/lib/constants";
 import { useWorkspace } from "@/components/workspace/workspace-provider";
 import type { Aspect, AspectInput, AspectStatus } from "@/types";
 import { cn } from "@/lib/utils";
@@ -101,8 +101,6 @@ export function EvaluationColumn({
     }
   }
 
-  const statusMeta = ASPECT_STATUS_LABELS[status];
-
   return (
     <div className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className={cn("rounded-t-xl border-b px-4 py-3", meta.ringClass.includes("ring") && "bg-white")}>
@@ -162,6 +160,18 @@ export function EvaluationColumn({
         </div>
 
         <div className="mt-auto space-y-2 pt-1">
+          {canEdit && (
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={save}
+              disabled={saving || !dirty || !evaluationId}
+              className="w-full justify-center"
+            >
+              {saving ? <Spinner className="h-3.5 w-3.5" /> : <Save />}
+              Simpan
+            </Button>
+          )}
           <div className="flex items-center gap-2">
             <select
               value={status}
@@ -173,22 +183,8 @@ export function EvaluationColumn({
               <option value="dinilai">Dinilai</option>
               <option value="perlu_klarifikasi">Perlu Klarifikasi</option>
             </select>
-            {canEdit && (
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={save}
-                disabled={saving || !dirty || !evaluationId}
-              >
-                {saving ? <Spinner className="h-3.5 w-3.5" /> : <Save />}
-                Simpan
-              </Button>
-            )}
-          </div>
-          <div className="flex items-center justify-between">
-            <Badge className={statusMeta.cls}>{statusMeta.label}</Badge>
             {savedFlash && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+              <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-emerald-600">
                 <CheckCircle2 className="h-3 w-3" /> Tersimpan
               </span>
             )}
