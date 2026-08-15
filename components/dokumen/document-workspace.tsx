@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
-  ArrowLeft,
   Check,
   FileText,
   Pencil,
@@ -13,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { BackButton } from "@/components/ui/back-button";
 import { AIAssistantPanel } from "@/components/workspace/ai-assistant-panel";
 import { formatTanggal, cn } from "@/lib/utils";
 import type { DocumentRow, Tender } from "@/types";
@@ -63,13 +62,11 @@ export function DocumentWorkspace({
     <div className="mx-auto flex h-[calc(100vh-56px)] w-full max-w-7xl">
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-6 py-3">
-          <Link
-            href="/dokumen"
+          <BackButton
+            fallback="/dokumen"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-gold-400 hover:text-brand-800"
             title="Kembali ke Smart-Dokumen"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
+          />
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
             <FileText className="h-4.5 w-4.5" />
           </span>

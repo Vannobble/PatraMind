@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,8 @@ export function AppShell({
   profile: Profile;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const [navNonce, setNavNonce] = useState(0);
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <div className="flex min-h-0 flex-1">
@@ -57,7 +60,7 @@ export function AppShell({
           <div className="px-4 pb-5 pt-4">
             <Logo dark size="sm" />
           </div>
-          <SidebarNav />
+          <SidebarNav onNavReset={() => setNavNonce((n) => n + 1)} />
           <div className="border-t border-white/10 p-3">
             <div className="flex items-center gap-2.5 rounded-xl bg-white/5 p-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-500 text-xs font-bold text-brand-950">
@@ -83,7 +86,10 @@ export function AppShell({
               {ROLE_LABELS[profile.role]}
             </Badge>
           </header>
-          <main className="min-h-0 flex-1 overflow-y-auto bg-[--background]">
+          <main
+            key={pathname + "-" + navNonce}
+            className="min-h-0 flex-1 overflow-y-auto bg-[--background]"
+          >
             {children}
           </main>
         </div>

@@ -27,7 +27,7 @@ const NAV_GROUPS = [
   },
 ];
 
-export function SidebarNav() {
+export function SidebarNav({ onNavReset }: { onNavReset?: () => void }) {
   const pathname = usePathname();
 
   return (
@@ -46,6 +46,12 @@ export function SidebarNav() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={(e) => {
+                    if (pathname === item.href) {
+                      e.preventDefault();
+                      onNavReset?.();
+                    }
+                  }}
                   className={cn(
                     "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition",
                     active

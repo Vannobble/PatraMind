@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { supabaseClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/auth";
 import { Badge } from "@/components/ui/badge";
+import { BackButton } from "@/components/ui/back-button";
 import { EvaluationBoard } from "@/components/d6/evaluation-board";
 import { DokumenRelevan } from "@/components/kolaborasi/dokumen-relevan";
 import type { DocumentRow, Evaluation, Role, Tender } from "@/types";
@@ -68,12 +68,10 @@ export default async function KolaborasiDetailPage({
     <div className="mx-auto w-full max-w-6xl px-6 py-8">
       <div className="mb-6 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Link
-            href="/kolaborasi"
+          <BackButton
+            fallback="/kolaborasi"
             className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 hover:text-brand-900"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Kolaborasi
-          </Link>
+          />
           <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
               <Building2 className="h-4.5 w-4.5" />
