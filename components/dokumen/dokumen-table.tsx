@@ -153,13 +153,12 @@ export function DokumenTable({
               <th className="px-3 py-3">Nomor Dokumen</th>
               <th className="px-3 py-3">Lokasi Simpan</th>
               <th className="px-3 py-3">Ditambahkan</th>
-              <th className="px-3 py-3" />
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={canEdit ? 8 : 7} className="px-5 py-12 text-center">
+                <td colSpan={canEdit ? 7 : 6} className="px-5 py-12 text-center">
                   <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                     <FileText className="h-6 w-6" />
                   </span>
@@ -179,6 +178,7 @@ export function DokumenTable({
               return (
                 <tr
                   key={d.id}
+                  onClick={() => router.push(`/dokumen/${d.id}`)}
                   className={cnRow(sel.has(d.id))}
                 >
                   {canEdit && (
@@ -186,6 +186,7 @@ export function DokumenTable({
                       <input
                         type="checkbox"
                         checked={sel.has(d.id)}
+                        onClick={(e) => e.stopPropagation()}
                         onChange={() => toggleOne(d.id)}
                         className="h-3.5 w-3.5 accent-brand-700"
                       />
@@ -219,14 +220,6 @@ export function DokumenTable({
                   <td className="px-3 py-3.5 text-xs text-slate-500">
                     {formatTanggal(d.created_at)}
                   </td>
-                  <td className="px-3 py-3.5">
-                    <Link
-                      href={`/dokumen/${d.id}`}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-brand-800 transition hover:border-gold-400 hover:bg-gold-100/40"
-                    >
-                      Buka →
-                    </Link>
-                  </td>
                 </tr>
               );
             })}
@@ -239,6 +232,6 @@ export function DokumenTable({
 
 function cnRow(selected: boolean): string {
   return selected
-    ? "border-b border-brand-100 bg-brand-50/50"
-    : "border-b border-slate-50 transition hover:bg-gold-100/30";
+    ? "cursor-pointer border-b border-brand-100 bg-brand-50/50"
+    : "cursor-pointer border-b border-slate-50 transition hover:bg-gold-100/30";
 }

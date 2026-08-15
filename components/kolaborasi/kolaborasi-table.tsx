@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Building2, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ASPECT_ORDER, ASPECT_META, ASPECT_STATUS_LABELS } from "@/lib/constants";
@@ -18,6 +18,7 @@ export function KolaborasiTable({
   }[];
   tById: Map<string, Tender>;
 }) {
+  const router = useRouter();
   const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {
@@ -70,13 +71,12 @@ export function KolaborasiTable({
               <th className="px-3 py-3">Penilaian Tim</th>
               <th className="px-3 py-3">Konsensus</th>
               <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3" />
             </tr>
           </thead>
           <tbody>
             {grouped.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-5 py-12 text-center">
+                <td colSpan={6} className="px-5 py-12 text-center">
                   <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                     <Building2 className="h-6 w-6" />
                   </span>
@@ -99,7 +99,8 @@ export function KolaborasiTable({
                 return (
                   <tr
                     key={e.id}
-                    className="border-b border-slate-50 transition hover:bg-gold-100/30"
+                    onClick={() => router.push(`/kolaborasi/${e.id}`)}
+                    className="cursor-pointer border-b border-slate-50 transition hover:bg-gold-100/30"
                   >
                     <td className="px-5 py-3.5 text-xs text-slate-400">
                       {counter}
@@ -159,14 +160,6 @@ export function KolaborasiTable({
                       >
                         {e.status === "final" ? "Final" : "Draft"}
                       </Badge>
-                    </td>
-                    <td className="px-3 py-3.5">
-                      <Link
-                        href={`/kolaborasi/${e.id}`}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-brand-800 transition hover:border-gold-400 hover:bg-gold-100/40"
-                      >
-                        Buka →
-                      </Link>
                     </td>
                   </tr>
                 );

@@ -92,13 +92,12 @@ export function PrebidTable({
               <th className="px-3 py-3">PIC</th>
               <th className="px-3 py-3">Status</th>
               <th className="px-3 py-3">Dok</th>
-              <th className="px-3 py-3" />
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-5 py-12 text-center">
+                <td colSpan={8} className="px-5 py-12 text-center">
                   <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                     <FolderKanban className="h-6 w-6" />
                   </span>
@@ -119,8 +118,9 @@ export function PrebidTable({
               return (
                 <tr
                   key={t.id}
+                  onClick={() => router.push(`/prebid/${t.id}`)}
                   className={cn(
-                    "border-b border-slate-50 transition hover:bg-gold-100/30",
+                    "cursor-pointer border-b border-slate-50 transition hover:bg-gold-100/30",
                     t.status === "draft" && "bg-red-50/30"
                   )}
                 >
@@ -155,6 +155,7 @@ export function PrebidTable({
                       <select
                         value={t.status}
                         disabled={changing === t.id}
+                        onClick={(e) => e.stopPropagation()}
                         onChange={(e) =>
                           changeStatus(t, e.target.value as TenderStatus)
                         }
@@ -178,14 +179,6 @@ export function PrebidTable({
                     <span className="ml-1 text-[10px] text-slate-400">
                       / {evalCounts[t.id] ?? 0} ev
                     </span>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <Link
-                      href={`/prebid/${t.id}`}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-brand-800 transition hover:border-gold-400 hover:bg-gold-100/40"
-                    >
-                      Buka →
-                    </Link>
                   </td>
                 </tr>
               );
