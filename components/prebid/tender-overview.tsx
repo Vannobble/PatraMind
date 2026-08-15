@@ -8,6 +8,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { RingkasanEditor } from "@/components/prebid/ringkasan-editor";
 import { TENDER_STATUS_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Tender, TenderStatus } from "@/types";
@@ -110,11 +111,13 @@ export function TenderOverview({
   docCounts,
   baStatus,
   evalStats,
+  canEditRingkasan = false,
 }: {
   tender: Tender;
   docCounts: { rks: number; penawaran: number; lainnya: number; total: number };
   baStatus: "draft" | "final" | null;
   evalStats: { total: number; final: number; consensus: number };
+  canEditRingkasan?: boolean;
 }) {
   const st = TENDER_STATUS_LABELS[tender.status] ?? TENDER_STATUS_LABELS.draft;
 
@@ -203,6 +206,11 @@ export function TenderOverview({
             </p>
           </div>
         ))}
+        <RingkasanEditor
+          tenderId={tender.id}
+          ringkasan={tender.ringkasan ?? ""}
+          canEdit={canEditRingkasan}
+        />
       </div>
     </div>
   );

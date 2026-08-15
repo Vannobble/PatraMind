@@ -231,6 +231,8 @@ const EXTRA_TENDERS: TenderSeed[] = [
     deadline: "2026-06-10",
     pic: "Rina Kartika",
     status: "evaluasi",
+    ringkasan:
+      "Pengadaan jasa kalibrasi alat ukur dan instrumentasi 2026 senilai Rp450 juta untuk memastikan ketertelusuran pengukuran seluruh alat ukur proses. Tahap evaluasi sedang berjalan di Kolaborasi dengan 3 penawaran vendor yang dinilai oleh tim teknis, legal, harga, dan K3.",
     rks: {
       nama: "RKS TOR Jasa Kalibrasi Alat Ukur dan Instrumentasi 2026.txt",
       text: `RKS/TOR JASA KALIBRASI ALAT UKUR DAN INSTRUMENTASI 2026
@@ -337,6 +339,8 @@ PERTANYAAN DAN JAWABAN:
     deadline: "2026-07-01",
     pic: "Agus Wijaya",
     status: "evaluasi",
+    ringkasan:
+      "Pengadaan jasa cleaning tanki dan pengelolaan limbah B3 2026 senilai Rp2,1 miliar untuk mendukung kesiapan operasional fasilitas penyimpanan produk. Pembersihan tanki timbun T-101 dan T-102 (water washing) plus pengelolaan limbah B3 oleh perusahaan berizin; tahap evaluasi penawaran di Kolaborasi.",
     rks: {
       nama: "RKS TOR Jasa Cleaning Tanki dan Pengelolaan Limbah B3 2026.txt",
       text: `RKS/TOR JASA CLEANING TANKI DAN PENGELOLAAN LIMBAH B3 2026
@@ -443,6 +447,8 @@ PERTANYAAN DAN JAWABAN:
     deadline: "2026-06-30",
     pic: "Siti Rahayu",
     status: "draft",
+    ringkasan:
+      "Pengadaan jasa transportasi distribusi BBM Regional Jawa Tengah 2026 untuk memastikan pasokan premium, pertalite, dan solar dari terminal ke SPBU tepat waktu dan aman. Armada tangki 5.000–16.000 liter; masih tahap draft — siap dibuka ke tahap proses (pre-bid).",
     rks: {
       nama: "RKS TOR Jasa Transportasi Distribusi BBM Regional Jawa Tengah 2026.txt",
       text: `RKS/TOR JASA TRANSPORTASI DISTRIBUSI BBM REGIONAL JAWA TENGAH 2026
@@ -553,6 +559,7 @@ type TenderSeed = {
   deadline: string;
   pic: string;
   status: string;
+  ringkasan: string;
   rks: { nama: string; text: string };
   offers: { nama: string; text: string }[];
   supports: { nama: string; text: string }[];
@@ -628,6 +635,8 @@ const TENDER_SEEDS: TenderSeed[] = [
     deadline: "2026-05-15",
     pic: "Budi Santoso",
     status: "proses",
+    ringkasan:
+      "Pengadaan spare part pompa sentrifugal unit NPK 2026 senilai Rp1,25 miliar untuk mendukung keandalan operasional produksi NPK. Tender berada pada tahap proses: sesi pre-bid/aanwijzing telah berjalan dan Berita Acara siap digenerate dari RKS.",
     rks: {
       nama: "RKS TOR Pengadaan Spare Part NPK 2026.txt",
       text: RKS_TEXT,
@@ -658,6 +667,7 @@ async function seedTenderAndDocs(seed: TenderSeed) {
         deadline: seed.deadline,
         pic: seed.pic,
         status: seed.status,
+        ringkasan: seed.ringkasan,
       })
       .select("id")
       .single();
@@ -672,6 +682,7 @@ async function seedTenderAndDocs(seed: TenderSeed) {
         nilai_kontrak: seed.nilai_kontrak,
         deadline: seed.deadline,
         pic: seed.pic,
+        ringkasan: seed.ringkasan,
       })
       .eq("id", tenderId);
     if (error) throw error;

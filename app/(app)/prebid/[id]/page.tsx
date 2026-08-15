@@ -130,6 +130,7 @@ export default async function TenderDetailPage({
           docCounts={docCounts}
           baStatus={ba?.status ?? null}
           evalStats={evalStats}
+          canEditRingkasan={["panitia", "admin"].includes(profile?.role ?? "")}
         />
       </div>
 

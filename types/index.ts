@@ -29,6 +29,7 @@ export interface Tender {
   deadline?: string | null;
   pic?: string;
   status: TenderStatus;
+  ringkasan?: string;
   created_at?: string;
 }
 

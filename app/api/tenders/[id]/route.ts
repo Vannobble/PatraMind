@@ -27,16 +27,22 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
     const status = String(body.status ?? "");
+    const ringkasan =
+      body.ringkasan !== undefined ? String(body.ringkasan).trim() : undefined;
 
-    if (!VALID.includes(status as TenderStatus)) {
+    if (status && !VALID.includes(status as TenderStatus)) {
       return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
     }
 
+    const payload: { status?: string; ringkasan?: string } = {};
+    if (status) payload.status = status;
+    if (ringkasan !== undefined) payload.ringkasan = ringkasan;
+
     const { data, error } = await supabaseClient()
       .from("tenders")
-      .update({ status })
+      .update(payload)
       .eq("id", id)
-      .select("id, status")
+      .select("id, status, ringkasan")
       .single();
     if (error) throw error;
 

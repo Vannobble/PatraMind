@@ -47,6 +47,9 @@ update tenders set status = 'diterima' where status = 'final';
 alter table tenders add constraint tenders_status_check
   check (status in ('draft','proses','evaluasi','diterima','ditolak'));
 
+-- Migrasi idempotent: ringkasan tender (rangkuman naratif per tender)
+alter table tenders add column if not exists ringkasan text not null default '';
+
 -- 4. Dokumen (RKS/TOR, penawaran, dll)
 create table if not exists documents (
   id uuid primary key default gen_random_uuid(),
