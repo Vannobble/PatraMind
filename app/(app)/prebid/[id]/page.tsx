@@ -3,10 +3,11 @@ import { supabaseClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/auth";
 import { TenderDetailTabs } from "@/components/prebid/tender-detail-tabs";
+import { TenderOverview } from "@/components/prebid/tender-overview";
 import { Badge } from "@/components/ui/badge";
 import { TENDER_STATUS_LABELS } from "@/lib/constants";
 import { formatRupiah, formatTanggal } from "@/lib/utils";
-import type { BeritaAcara, Tender } from "@/types";
+import type { BeritaAcara, Evaluation, Tender } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -26,20 +27,29 @@ export default async function TenderDetailPage({
     // env belum diatur
   }
 
-  const [{ data: tender }, { data: docs }, { data: bas }] = await Promise.all([
-    supabaseClient().from("tenders").select("*").eq("id", id).maybeSingle(),
-    supabaseClient()
-      .from("documents")
-      .select("*")
-      .eq("tender_id", id)
-      .order("created_at"),
-    supabaseClient()
-      .from("berita_acara")
-      .select("*")
-      .eq("tender_id", id)
-      .order("created_at", { ascending: false })
-      .limit(1),
-  ]);
+  const [{ data: tender }, { data: docs }, { data: bas }, { data: evals }] =
+    await Promise.all([
+      supabaseClient()
+        .from("tenders")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle(),
+      supabaseClient()
+        .from("documents")
+        .select("*")
+        .eq("tender_id", id)
+        .order("created_at"),
+      supabaseClient()
+        .from("berita_acara")
+        .select("*")
+        .eq("tender_id", id)
+        .order("created_at", { ascending: false })
+        .limit(1),
+      supabaseClient()
+        .from("evaluations")
+        .select("status, consensus_result")
+        .eq("tender_id", id),
+    ]);
 
   if (!tender) notFound();
   const t = tender as Tender;
@@ -49,6 +59,20 @@ export default async function TenderDetailPage({
     (docs ?? []).find((d) => d.jenis === "rks_tor") ??
     (docs ?? []).find((d) => d.jenis === "lainnya") ??
     null;
+
+  const docCounts = {
+    rks: (docs ?? []).filter((d) => d.jenis === "rks_tor").length,
+    penawaran: (docs ?? []).filter((d) => d.jenis === "penawaran").length,
+    lainnya: (docs ?? []).filter((d) => d.jenis === "lainnya").length,
+    total: (docs ?? []).length,
+  };
+  const evList = (evals ?? []) as Evaluation[];
+  const evalStats = {
+    total: evList.length,
+    final: evList.filter((e) => e.status === "final").length,
+    consensus: evList.filter((e) => e.consensus_result !== null).length,
+  };
+  const ba = (bas?.[0] as BeritaAcara | undefined) ?? null;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-8">
@@ -100,10 +124,19 @@ export default async function TenderDetailPage({
         </div>
       </div>
 
+      <div className="mb-6 space-y-4">
+        <TenderOverview
+          tender={t}
+          docCounts={docCounts}
+          baStatus={ba?.status ?? null}
+          evalStats={evalStats}
+        />
+      </div>
+
       <TenderDetailTabs
         tenderId={id}
         rksFileName={rks?.nama_file ?? "RKS/TOR"}
-        initialBa={(bas?.[0] as BeritaAcara | undefined) ?? null}
+        initialBa={ba}
       />
     </div>
   );
