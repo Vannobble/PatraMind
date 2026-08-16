@@ -51,7 +51,7 @@ export function DokumenRelevan({
           Belum ada dokumen untuk tender ini — tambahkan lewat Smart-Dokumen.
         </p>
       ) : (
-        <div className="space-y-2">
+        <div className="max-h-[380px] space-y-2 overflow-y-auto pr-1">
           {penawaran.map((d) => (
             <Link
               key={d.id}

@@ -449,8 +449,8 @@ export function EvaluationColumn({
               <input
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Tanya AI tentang penawaran vendor…"
-                className="h-8 flex-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+                placeholder="Tanya AI tentang penawaran…"
+                className="h-8 min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
               />
               <Button
                 type="submit"

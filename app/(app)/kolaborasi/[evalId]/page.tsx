@@ -6,6 +6,7 @@ import { getProfile } from "@/lib/supabase/auth";
 import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/ui/back-button";
 import { EvaluationBoard } from "@/components/d6/evaluation-board";
+import { ScoreSummary } from "@/components/d6/score-summary";
 import { WeightEditor } from "@/components/kolaborasi/weight-editor";
 import { DokumenRelevan } from "@/components/kolaborasi/dokumen-relevan";
 import type {
@@ -115,7 +116,7 @@ export default async function KolaborasiDetailPage({
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-4">
           {canConfig && (
             <WeightEditor
@@ -137,7 +138,16 @@ export default async function KolaborasiDetailPage({
             initialAssessments={assessments}
           />
         </div>
-        <DokumenRelevan docs={docRows} activeVendor={e.vendor_name} />
+        <aside className="min-w-0 space-y-4">
+          <ScoreSummary
+            evaluation={e}
+            mode={(t?.mode_evaluasi ?? "aspek") as TenderMode}
+            departments={departments}
+            tenderDepartments={tenderDepartments}
+            assessments={assessments}
+          />
+          <DokumenRelevan docs={docRows} activeVendor={e.vendor_name} />
+        </aside>
       </div>
     </div>
   );

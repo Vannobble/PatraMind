@@ -1,0 +1,445 @@
+
+> patramind@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+- Environments: .env.local
+✓ Ready in 3.6s
+✓ Running next.config.ts took 366ms
+
+○ Compiling /login ...
+ GET /login 200 in 2.3s (next.js: 1253ms, proxy.ts: 19ms, application-code: 1044ms)
+ GET /login 200 in 184ms (next.js: 32ms, proxy.ts: 22ms, application-code: 129ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 5.1s (next.js: 2.7s, proxy.ts: 487ms, application-code: 1953ms)
+ GET /dashboard 200 in 2.4s (next.js: 29ms, proxy.ts: 492ms, application-code: 1880ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 5.8s (next.js: 3.2s, proxy.ts: 312ms, application-code: 2.2s)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 2.9s (next.js: 2.2s, application-code: 747ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 3.1s (next.js: 2.3s, application-code: 784ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 3.1s (next.js: 2.3s, application-code: 754ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 3.3s (next.js: 2.3s, application-code: 959ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 622ms (next.js: 11ms, application-code: 612ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 640ms (next.js: 21ms, application-code: 619ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 648ms (next.js: 14ms, application-code: 634ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 598ms (next.js: 9ms, application-code: 589ms)
+ GET /login 200 in 210ms (next.js: 28ms, proxy.ts: 19ms, application-code: 164ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 1691ms (next.js: 21ms, proxy.ts: 242ms, application-code: 1427ms)
+ GET /dashboard 200 in 1492ms (next.js: 33ms, proxy.ts: 285ms, application-code: 1173ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 1776ms (next.js: 70ms, proxy.ts: 134ms, application-code: 1572ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 502ms (next.js: 11ms, application-code: 491ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 505ms (next.js: 24ms, application-code: 481ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 665ms (next.js: 14ms, application-code: 651ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 651ms (next.js: 7ms, application-code: 645ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 478ms (next.js: 8ms, application-code: 470ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 454ms (next.js: 7ms, application-code: 447ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 612ms (next.js: 7ms, application-code: 605ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 608ms (next.js: 11ms, application-code: 597ms)
+ GET /login 200 in 157ms (next.js: 13ms, proxy.ts: 24ms, application-code: 119ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 2.2s (next.js: 10ms, proxy.ts: 581ms, application-code: 1563ms)
+ GET /dashboard 200 in 2.3s (next.js: 15ms, proxy.ts: 931ms, application-code: 1339ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 2.2s (next.js: 61ms, proxy.ts: 391ms, application-code: 1769ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 474ms (next.js: 10ms, application-code: 464ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 496ms (next.js: 13ms, application-code: 483ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 507ms (next.js: 29ms, application-code: 478ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 540ms (next.js: 28ms, application-code: 512ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 467ms (next.js: 11ms, application-code: 456ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 477ms (next.js: 13ms, application-code: 464ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 495ms (next.js: 24ms, application-code: 471ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 604ms (next.js: 10ms, application-code: 594ms)
+ GET /login 200 in 260ms (next.js: 41ms, proxy.ts: 28ms, application-code: 190ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 2.4s (next.js: 35ms, proxy.ts: 634ms, application-code: 1766ms)
+ GET /dashboard 200 in 1876ms (next.js: 19ms, proxy.ts: 272ms, application-code: 1585ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 1732ms (next.js: 58ms, proxy.ts: 151ms, application-code: 1523ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 480ms (next.js: 21ms, application-code: 459ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 553ms (next.js: 22ms, application-code: 532ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 534ms (next.js: 43ms, application-code: 492ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 656ms (next.js: 33ms, application-code: 623ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 523ms (next.js: 9ms, application-code: 514ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 631ms (next.js: 7ms, application-code: 624ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 699ms (next.js: 5ms, application-code: 694ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 617ms (next.js: 7ms, application-code: 609ms)
+ GET /login 200 in 96ms (next.js: 8ms, proxy.ts: 11ms, application-code: 77ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 1682ms (next.js: 12ms, proxy.ts: 260ms, application-code: 1411ms)
+ GET /dashboard 200 in 2.3s (next.js: 23ms, proxy.ts: 543ms, application-code: 1684ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 1879ms (next.js: 47ms, proxy.ts: 165ms, application-code: 1667ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 561ms (next.js: 8ms, application-code: 554ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 558ms (next.js: 22ms, application-code: 536ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 774ms (next.js: 10ms, application-code: 763ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 425ms (next.js: 4ms, application-code: 421ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 475ms (next.js: 8ms, application-code: 467ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 1075ms (next.js: 7ms, application-code: 1068ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 645ms (next.js: 5ms, application-code: 639ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 571ms (next.js: 7ms, application-code: 564ms)
+ GET /login 200 in 93ms (next.js: 8ms, proxy.ts: 10ms, application-code: 75ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollHandlerNew focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="login/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/login" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="login/page...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function LoginPage} serverProvidedParams={{...}}>
+                          <LoginPage params={Promise} searchParams={Promise}>
+                            <div
++                             className="flex min-h-screen"
+-                             className="flex min-h-screen items-center justify-center bg-brand-950 p-6"
+                            >
+                              <div
++                               className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-..."
+-                               className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl"
+                              >
+                                <Logo dark={true} size="lg">
+                                  <span className="inline-fle...">
+                                    <img
+                                      src="/logo-patramind.png"
+                                      alt="PATRAMIND — Intelligent Procurement Workspace"
++                                     className="w-auto select-none h-14 drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
+-                                     className="w-auto select-none h-11"
+                                    >
++                               <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+-                               <h1 className="mt-6 text-lg font-bold text-slate-900">
+                                ...
+                              ...
+                      ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at p (<anonymous>)
+    at LoginPage (app/login/page.tsx:77:9)
+  75 |       <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
+  76 |         <Logo dark size="lg" />
+> 77 |         <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+     |         ^
+  78 |           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
+  79 |           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
+  80 |           pengadaan dengan bantuan Context-Aware Agentic AI.
+ GET /dashboard 200 in 1434ms (next.js: 10ms, proxy.ts: 270ms, application-code: 1154ms)
+ GET /dashboard 200 in 1556ms (next.js: 14ms, proxy.ts: 458ms, application-code: 1083ms)
+ GET /kolaborasi/39c1881f-9315-40e2-b192-1b0635719aeb 200 in 1604ms (next.js: 44ms, proxy.ts: 146ms, application-code: 1413ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 571ms (next.js: 8ms, application-code: 563ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 543ms (next.js: 19ms, application-code: 525ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 571ms (next.js: 7ms, application-code: 565ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 596ms (next.js: 11ms, application-code: 585ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=teknis 200 in 484ms (next.js: 12ms, application-code: 472ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=legal 200 in 470ms (next.js: 7ms, application-code: 463ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=harga 200 in 482ms (next.js: 9ms, application-code: 472ms)
+ GET /api/aspect-chat?evaluationId=39c1881f-9315-40e2-b192-1b0635719aeb&aspect=k3 200 in 576ms (next.js: 23ms, application-code: 553ms)
