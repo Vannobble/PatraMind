@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { Badge } from "@/components/ui/badge";
@@ -58,7 +59,19 @@ export function AppShell({
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-[240px] shrink-0 flex-col bg-gradient-to-b from-brand-950 via-brand-900 to-brand-950">
           <div className="px-4 pb-5 pt-4">
-            <Logo dark size="sm" />
+            <Link
+              href="/dashboard"
+              onClick={(e) => {
+                if (pathname === "/dashboard") {
+                  e.preventDefault();
+                  setNavNonce((n) => n + 1);
+                }
+              }}
+              className="block"
+              title="Kembali ke Dashboard Utama"
+            >
+              <Logo dark size="sm" />
+            </Link>
           </div>
           <SidebarNav onNavReset={() => setNavNonce((n) => n + 1)} />
           <div className="border-t border-white/10 p-3">
