@@ -67,7 +67,13 @@ export function TenderDetailTabs({
             tenderId={tenderId}
             rksFileName={rksFileName}
             initialNotes={(initialBa?.qna_notes as QnaNote[] | undefined) ?? []}
-            existingBa={(initialBa?.hasil_generate as BaJson | null) ?? null}
+            existingBa={
+              (initialBa?.hasil_generate &&
+              Object.keys(initialBa.hasil_generate).length > 0 &&
+              (initialBa.hasil_generate.nomor_ba || initialBa.hasil_generate.ringkasan_pelaksanaan)
+                ? initialBa.hasil_generate
+                : null) as BaJson | null
+            }
             existingStatus={initialBa?.status}
             existingBaId={initialBa?.id}
           />
