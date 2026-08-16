@@ -149,11 +149,29 @@ create table if not exists department_assessments (
   ai_skor numeric,
   ai_ringkasan text not null default '',
   status text not null default 'belum'
-    check (status in ('belum','dinilai','diskor')),
+    check (status in ('belum','dinilai','diskor','submitted')),
   created_at timestamp default now(),
   updated_at timestamp default now(),
   unique (evaluation_id, department_id)
 );
+
+-- 8c. Percakapan tanya-jawab per ruang departemen (mode_evaluasi = 'departemen')
+create table if not exists department_chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  evaluation_id uuid references evaluations(id) on delete cascade,
+  department_id uuid references departments(id) on delete cascade,
+  role text not null check (role in ('user','assistant')),
+  content text not null default '',
+  created_at timestamp default now()
+);
+
+create index if not exists department_chat_messages_eval_dept_idx
+  on department_chat_messages (evaluation_id, department_id, created_at);
+
+-- migrasi status: tambahkan 'submitted' pada constraint lama
+alter table department_assessments drop constraint if exists department_assessments_status_check;
+alter table department_assessments add constraint department_assessments_status_check
+  check (status in ('belum','dinilai','diskor','submitted'));
 
 -- 9. Fungsi pencarian vektor (RAG D8)
 create or replace function match_documents(

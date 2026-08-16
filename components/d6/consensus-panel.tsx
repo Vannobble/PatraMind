@@ -23,6 +23,9 @@ export function ConsensusPanel({
   isFinal,
   canGenerate,
   canApprove,
+  mode = "aspek",
+  totalDivisions = 0,
+  submittedDivisions = 0,
   onConsensus,
   onApproved,
 }: {
@@ -33,12 +36,20 @@ export function ConsensusPanel({
   isFinal: boolean;
   canGenerate: boolean;
   canApprove: boolean;
+  mode?: "aspek" | "departemen";
+  totalDivisions?: number;
+  submittedDivisions?: number;
   onConsensus: (c: ConsensusJson) => void;
   onApproved: () => void;
 }) {
   const { setLiveDocument } = useWorkspace();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isDepartemen = mode === "departemen";
+  const allSubmitted = totalDivisions > 0 && submittedDivisions >= totalDivisions;
+  const generateLabel = isDepartemen ? "Generate Summary" : "Generate Konsensus";
+  const generateLocked = isDepartemen && !allSubmitted;
 
   async function generate() {
     if (!evaluationId) return;
@@ -54,8 +65,8 @@ export function ConsensusPanel({
       if (!res.ok) throw new Error(json.error ?? "Gagal konsensus");
       onConsensus(json.consensus);
       setLiveDocument({
-        title: `Konsensus Evaluasi — ${vendorName}`,
-        subtitle: "Ringkasan akhir 4 aspek",
+        title: `${isDepartemen ? "Summary Evaluasi" : "Konsensus Evaluasi"} — ${vendorName}`,
+        subtitle: isDepartemen ? "Ringkasan akhir seluruh divisi" : "Ringkasan akhir 4 aspek",
         badge: json.consensus.rekomendasi,
         kind: "text",
         text: json.consensus.kesimpulan,
@@ -96,10 +107,14 @@ export function ConsensusPanel({
           </span>
           <div>
             <h3 className="text-sm font-bold text-slate-900">
-              Konsensus Evaluasi — {vendorName}
+              {isDepartemen
+                ? `Summary Evaluasi — ${vendorName}`
+                : `Konsensus Evaluasi — ${vendorName}`}
             </h3>
             <p className="text-xs text-slate-500">
-              Konsolidasi 4 aspek evaluasi menjadi satu ringkasan akhir
+              {isDepartemen
+                ? "Gabungan penilaian seluruh divisi menjadi ringkasan akhir"
+                : "Konsolidasi 4 aspek evaluasi menjadi satu ringkasan akhir"}
             </p>
           </div>
         </div>
@@ -112,10 +127,16 @@ export function ConsensusPanel({
           <Button
             size="sm"
             onClick={generate}
-            disabled={loading || !canGenerate || !evaluationId}
+            disabled={
+              loading ||
+              !canGenerate ||
+              !evaluationId ||
+              generateLocked
+            }
+            title={generateLocked ? "Tunggu seluruh divisi menyelesaikan penilaian" : undefined}
           >
             {loading ? <Spinner className="h-3.5 w-3.5" /> : <Sparkles />}
-            Generate Konsensus
+            {generateLabel}
           </Button>
           {canApprove && (
             <Button
@@ -133,6 +154,14 @@ export function ConsensusPanel({
       {error && (
         <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
           {error}
+        </p>
+      )}
+
+      {isDepartemen && !allSubmitted && !consensus && (
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-800">
+          <AlertTriangle className="mr-1 inline h-3 w-3" />
+          {submittedDivisions} dari {totalDivisions} divisi telah submit —
+          tombol {generateLabel} aktif setelah semua divisi selesai.
         </p>
       )}
 
@@ -203,8 +232,9 @@ export function ConsensusPanel({
       ) : (
         !loading && (
           <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white/60 p-4 text-center text-xs text-slate-500">
-            Belum ada konsensus — kumpulkan penilaian 4 aspek, lalu klik{" "}
-            <b>Generate Konsensus</b>.
+            {isDepartemen
+              ? "Belum ada summary — seluruh divisi harus menyelesaikan penilaian, lalu klik Generate Summary."
+              : "Belum ada konsensus — kumpulkan penilaian 4 aspek, lalu klik Generate Konsensus."}
           </p>
         )
       )}

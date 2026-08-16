@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { EvaluationColumn } from "./evaluation-column";
 import { DepartmentBoard } from "./department-board";
 import { ConsensusPanel } from "./consensus-panel";
-import { ASPECT_ORDER, ASPECT_META, ROLE_LABELS } from "@/lib/constants";
+import { ASPECT_META, ASPECT_ORDER, ROLE_LABELS } from "@/lib/constants";
 import type {
   Aspect,
   AspectInput,
@@ -88,9 +88,28 @@ export function EvaluationBoard({
   }
 
   function canEdit(aspect: Aspect): boolean {
+    if (role === "admin") return true;
     const required = ASPECT_META[aspect].role;
-    return role === required || role === "admin";
+    return role === required;
   }
+
+  const ROLE_TO_ASPECT: Partial<Record<Role, Aspect>> = {
+    teknis: "teknis",
+    legal: "legal",
+    panitia: "harga",
+    k3: "k3",
+  };
+  const visibleAspects: Aspect[] =
+    role === "admin" || role === "otorisator"
+      ? ASPECT_ORDER
+      : ROLE_TO_ASPECT[role]
+        ? [ROLE_TO_ASPECT[role] as Aspect]
+        : [];
+
+  const submittedCount = assessments.filter(
+    (a) => a.status === "submitted"
+  ).length;
+  const totalDivisions = tenderDepartments.length;
 
   function onSaved(aspect: Aspect, input: AspectInput) {
     const field = `${aspect}_input`;
@@ -188,7 +207,7 @@ export function EvaluationBoard({
             />
           ) : (
             <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
-              {ASPECT_ORDER.map((aspect) => (
+              {visibleAspects.map((aspect) => (
                 <EvaluationColumn
                   key={aspect}
                   aspect={aspect}
@@ -213,8 +232,11 @@ export function EvaluationBoard({
             evaluationId={current.id}
             consensus={current.consensus_result}
             isFinal={current.status === "final"}
-            canGenerate={["panitia", "otorisator", "admin"].includes(role)}
+            canGenerate={["otorisator", "admin"].includes(role)}
             canApprove={["otorisator", "admin"].includes(role)}
+            mode={mode}
+            totalDivisions={totalDivisions}
+            submittedDivisions={submittedCount}
             onConsensus={onConsensus}
             onApproved={onApproved}
           />

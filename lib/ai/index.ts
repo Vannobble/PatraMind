@@ -9,6 +9,7 @@ import type {
 } from "@/types";
 import { chatCompletion } from "./openai";
 import {
+  mockAssessmentChatAnswer,
   mockChatAnswer,
   mockConsensus,
   mockDepartmentProposal,
@@ -16,6 +17,7 @@ import {
   mockEvaluateAspect,
   mockGenerateBa,
   mockScoreAssessment,
+  mockSummarizeAssessment,
   mockWeightedConsensus,
 } from "./mock";
 import { retrieveChunks } from "./rag";
@@ -312,6 +314,73 @@ export async function chatAnswer(params: {
   });
 
   return { answer, sources: chunks.map((c) => c.sumber) };
+}
+
+/* ================= D6b — Tanya-jawab & rangkum ruang departemen ================= */
+
+const ASSESSMENT_CHAT_SYSTEM = `Kamu adalah asisten penilaian pengadaan dari perspektif departemen {department_name}.
+Gunakan HANYA informasi dari dua dokumen berikut untuk menjawab:
+- RKS/TOR: {rks_spec}
+- Penawaran vendor {vendor_name}: {vendor_offer}
+
+Jawab pertanyaan pengguna (penilai departemen) dengan ringkas (maks 150 kata), sebutkan sumbernya (RKS/TOR atau penawaran), dan jangan mengarang informasi yang tidak ada di dokumen. Jika tidak ada di dokumen, katakan tidak tersedia.`;
+
+export async function assessmentChatAnswer(params: {
+  departmentName: string;
+  vendorName: string;
+  rksSpec: string;
+  vendorOffer: string;
+  question: string;
+}): Promise<string> {
+  if (aiMode() === "local") {
+    return mockAssessmentChatAnswer(params);
+  }
+  const system = ASSESSMENT_CHAT_SYSTEM.replace(
+    "{department_name}",
+    params.departmentName
+  )
+    .replace("{rks_spec}", params.rksSpec.slice(0, 8000) || "(tidak tersedia)")
+    .replace("{vendor_name}", params.vendorName)
+    .replace("{vendor_offer}", params.vendorOffer.slice(0, 8000) || "(tidak tersedia)");
+  return chatCompletion({
+    system,
+    user: params.question,
+    temperature: 0.2,
+  });
+}
+
+const SUMMARIZE_ASSESSMENT_SYSTEM = `Kamu adalah asisten yang merangkum hasil tanya-jawab evaluasi pengadaan untuk departemen {department_name} atas penawaran vendor {vendor_name}.
+
+Percakapan tanya-jawab (penilai bertanya, AI menjawab dari dokumen):
+{messages}
+
+Susun RINGKASAN PENILAIAN DEPARTEMEN (bahasa Indonesia, maks 200 kata) yang mencakup: hal-hal yang ditinjau (topik yang ditanyakan), temuan/kesimpulan dari dokumen, serta rekomendasi awal (layak / perlu klarifikasi). Tulis sebagai teks polos formal, bukan JSON.`;
+
+export async function summarizeAssessment(params: {
+  departmentName: string;
+  vendorName: string;
+  messages: { role: "user" | "assistant"; content: string }[];
+}): Promise<string> {
+  if (aiMode() === "local") {
+    return mockSummarizeAssessment(params);
+  }
+  const transcript = params.messages
+    .map(
+      (m) => `${m.role === "user" ? "Penilai" : "AI"}: ${m.content.slice(0, 1000)}`
+    )
+    .join("\n")
+    .slice(0, 12000);
+  const system = SUMMARIZE_ASSESSMENT_SYSTEM.replace(
+    "{department_name}",
+    params.departmentName
+  )
+    .replace("{vendor_name}", params.vendorName)
+    .replace("{messages}", transcript || "(belum ada percakapan)");
+  return chatCompletion({
+    system,
+    user: "Rangkum penilaian departemen.",
+    temperature: 0.3,
+  });
 }
 
 /* ================= D8 — Edit Dokumen via AI ================= */

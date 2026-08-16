@@ -465,6 +465,90 @@ export async function mockWeightedConsensus(params: {
   return { kesimpulan, poin_perhatian, rekomendasi, skor_akhir: skorAkhir };
 }
 
+/* ---------------- D6b: Tanya-jawab & rangkum ruang departemen ---------------- */
+
+function scoreParagraph(text: string, tokens: string[]): number {
+  let score = 0;
+  for (const t of tokens) score += countOccurrences(text, t);
+  return score;
+}
+
+function bestParagraph(text: string, tokens: string[]): string {
+  const paras = text
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 10);
+  if (paras.length === 0) return "";
+  let best = paras[0];
+  let bestScore = -1;
+  for (const p of paras) {
+    const s = scoreParagraph(p, tokens);
+    if (s > bestScore) {
+      bestScore = s;
+      best = p;
+    }
+  }
+  return bestScore > 0 ? best : "";
+}
+
+export async function mockAssessmentChatAnswer(params: {
+  departmentName: string;
+  vendorName: string;
+  rksSpec: string;
+  vendorOffer: string;
+  question: string;
+}): Promise<string> {
+  await sleep(600);
+  const { departmentName, vendorName, rksSpec, vendorOffer, question } = params;
+  const tokens = tokenize(question);
+  const doc = bestParagraph(vendorOffer, tokens) || bestParagraph(rksSpec, tokens);
+
+  if (!doc) {
+    return `Dari dokumen penawaran ${vendorName} dan RKS/TOR yang saya baca, saya belum menemukan informasi yang menjawab pertanyaan tersebut. Coba tanyakan hal lain, misalnya tentang spesifikasi teknis, kelengkapan dokumen, harga, atau ketentuan K3.`;
+  }
+
+  const quote = firstSentence(doc, 260);
+  const sumber =
+    bestParagraph(vendorOffer, tokens) === doc ? "penawaran" : "RKS/TOR";
+  return `Ditinjau dari perspektif ${departmentName}, berdasarkan ${sumber} ${vendorName}: "${quote}". Apabila Anda ingin detail lain (misal perbandingan dengan ketentuan RKS atau bagian tertentu penawaran), silakan tanyakan lebih spesifik.`;
+}
+
+export async function mockSummarizeAssessment(params: {
+  departmentName: string;
+  vendorName: string;
+  messages: { role: "user" | "assistant"; content: string }[];
+}): Promise<string> {
+  await sleep(900);
+  const { departmentName, vendorName, messages } = params;
+  const userLines = messages
+    .filter((m) => m.role === "user")
+    .map((m) => firstSentence(m.content, 140));
+  const aiLines = messages
+    .filter((m) => m.role === "assistant")
+    .map((m) => firstSentence(m.content, 160));
+
+  const topik =
+    userLines.length > 0
+      ? userLines.join("; ")
+      : "kesesuaian penawaran dengan lingkup pekerjaan";
+  const temuan =
+    aiLines.length > 0
+      ? aiLines.slice(0, 3).map((s) => `• ${s}`).join("\n")
+      : "• Belum ada temuan spesifik dari tanya-jawab.";
+
+  return [
+    `RINGKASAN PENILAIAN — ${departmentName}`,
+    `Vendor: ${vendorName}`,
+    "",
+    `Berdasarkan tanya-jawab yang dilakukan, departemen ${departmentName} meninjau: ${topik}.`,
+    "",
+    "Temuan dari dokumen:",
+    temuan,
+    "",
+    `Kesimpulan: secara umum penawaran ${vendorName} dinilai sesuai untuk aspek yang menjadi lingkup ${departmentName}, dengan catatan yang perlu dikonfirmasi lebih lanjut bila ada kekurangan.`,
+  ].join("\n");
+}
+
 /* ---------------- D8: Edit dokumen offline ---------------- */
 
 function escRe(text: string): string {

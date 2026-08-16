@@ -15,7 +15,16 @@ export type DocJenis = "rks_tor" | "penawaran" | "lainnya";
 
 export type TenderMode = "aspek" | "departemen";
 
-export type AssessmentStatus = "belum" | "dinilai" | "diskor";
+export type AssessmentStatus = "belum" | "dinilai" | "diskor" | "submitted";
+
+export interface AssessmentChatMessage {
+  id: string;
+  evaluation_id: string;
+  department_id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at?: string;
+}
 
 export interface Profile {
   id: string;
