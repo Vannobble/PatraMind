@@ -12,11 +12,15 @@ export function AIAssistantPanel({
   aiMode,
   documentId,
   compact = false,
+  canEdit = false,
+  onApplyEdit,
 }: {
   tenderId: string;
   aiMode: "openai" | "local";
   documentId?: string;
   compact?: boolean;
+  canEdit?: boolean;
+  onApplyEdit?: (kontenBaru: string) => void;
 }) {
   const { aiOpen, setAiOpen } = useWorkspace();
   const [tab, setTab] = useState<"chat" | "preview">("chat");
@@ -92,7 +96,12 @@ export function AIAssistantPanel({
 
         <div className="min-h-0 flex-1">
           <div className={cn("h-full", tab === "chat" ? "block" : "hidden")}>
-            <ChatPanel tenderId={tenderId} documentId={documentId} />
+            <ChatPanel
+              tenderId={tenderId}
+              documentId={documentId}
+              canEdit={canEdit}
+              onApplyEdit={onApplyEdit}
+            />
           </div>
           <div className={cn("h-full", tab === "preview" ? "block" : "hidden")}>
             <LivePreviewPanel />

@@ -29,13 +29,20 @@ export function DocumentWorkspace({
   aiMode: "openai" | "local";
 }) {
   const canEdit = ["panitia", "admin"].includes(role);
+  const [docState, setDocState] = useState(doc);
   const [title, setTitle] = useState(doc.nama_file);
   const [content, setContent] = useState(doc.konten_text ?? "");
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const dirty = title !== doc.nama_file || content !== (doc.konten_text ?? "");
+  const dirty =
+    title !== docState.nama_file || content !== (docState.konten_text ?? "");
+
+  function applyAiEdit(kontenBaru: string) {
+    setDocState((prev) => ({ ...prev, konten_text: kontenBaru }));
+    setContent(kontenBaru);
+  }
 
   async function save() {
     if (!dirty || saving) return;
@@ -170,6 +177,8 @@ export function DocumentWorkspace({
             aiMode={aiMode}
             documentId={doc.id}
             compact
+            canEdit={canEdit}
+            onApplyEdit={applyAiEdit}
           />
         </div>
       </aside>

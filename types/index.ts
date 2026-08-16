@@ -130,6 +130,8 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   sources?: string[];
+  editProposal?: { konten_baru: string; ringkasan: string } | null;
+  editApplied?: boolean;
 }
 
 export interface DocChunk {

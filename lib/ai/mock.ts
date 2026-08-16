@@ -465,6 +465,121 @@ export async function mockWeightedConsensus(params: {
   return { kesimpulan, poin_perhatian, rekomendasi, skor_akhir: skorAkhir };
 }
 
+/* ---------------- D8: Edit dokumen offline ---------------- */
+
+function escRe(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function lowerTrim(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+export async function mockDocumentEdit(params: {
+  documentTitle: string;
+  currentContent: string;
+  instruction: string;
+}): Promise<{ konten_baru: string; ringkasan: string }> {
+  await sleep(700);
+  const { documentTitle, currentContent, instruction } = params;
+  const ins = lowerTrim(instruction);
+
+  // 1. Ganti "X" dengan "Y"
+  const ganti = ins.match(/(?:ganti|ubah|replace)\s+["“']([^"”']{2,120})["”']\s+(?:dengan|menjadi|ke|jadi)\s+["“']([^"”']{2,300})["”']/i);
+  if (ganti) {
+    const [_, from, to] = ganti;
+    const re = new RegExp(escRe(from), "gi");
+    if (!re.test(currentContent)) {
+      return {
+        konten_baru: currentContent,
+        ringkasan: `Saya tidak menemukan frasa "${from}" pada dokumen ${documentTitle}. Tidak ada perubahan yang dilakukan — perintahkan saya dengan frasa yang persis ada di dokumen.`,
+      };
+    }
+    const konten_baru = currentContent.replace(new RegExp(escRe(from), "gi"), to);
+    return {
+      konten_baru,
+      ringkasan: `Saya mengganti "${from}" menjadi "${to}" pada ${documentTitle}. Jumlah penggantian: ${countOccurrences(currentContent, from)}.`,
+    };
+  }
+
+  // 2. Hapus baris/frasa yang mengandung kata kunci
+  const hapus = ins.match(/(?:hapus|buang|hilangkan)\s+["“']?([^"”']{2,120})["”']?/i);
+  if (hapus) {
+    const target = hapus[1].trim();
+    const lines = currentContent.split("\n");
+    const kept = lines.filter((l) => !lowerTrim(l).includes(lowerTrim(target)));
+    if (kept.length === lines.length) {
+      return {
+        konten_baru: currentContent,
+        ringkasan: `Saya tidak menemukan bagian yang mengandung "${target}" pada ${documentTitle}. Tidak ada yang dihapus — coba perintah dengan kata kunci yang lebih tepat.`,
+      };
+    }
+    const removed = lines.length - kept.length;
+    return {
+      konten_baru: kept.join("\n").replace(/\n{3,}/g, "\n\n").trim(),
+      ringkasan: `Saya menghapus ${removed} baris yang mengandung "${target}" dari ${documentTitle}.`,
+    };
+  }
+
+  // 3. Tambahkan paragraf/klausa di akhir dokumen
+  const tambah = ins.match(/(?:tambahkan|tambah|sisipkan|buatkan)\s+["“']?([^"”']{2,300})["”']?(?:\s+(?:di|pada|setelah)\s+(?:akhir|bagian)?\s*["“']?([^"”']{2,80})?["”']?)?/i);
+  if (tambah) {
+    const teksBaru = (tambah[1] ?? "").trim().replace(/^klausa\s+/i, "Klausa ");
+    if (!teksBaru) {
+      return {
+        konten_baru: currentContent,
+        ringkasan: "Instruksi penambahan tidak jelas. Contoh: \"Tambahkan klausa tentang jaminan mutu di akhir dokumen\".",
+      };
+    }
+    const konten_baru = `${currentContent.replace(/\s+$/, "")}\n\n${teksBaru}\n`;
+    return {
+      konten_baru,
+      ringkasan: `Saya menambahkan paragraf baru di akhir ${documentTitle}: "${firstSentence(teksBaru, 120)}".`,
+    };
+  }
+
+  // 4. Perbaiki ejaan/format ringan
+  if (/(?:perbaiki|rapikan|bersihkan|perjelas)\s+(?:ejaan|format|penulisan|tata|tulisan)/i.test(ins) || /perbaiki ejaan/i.test(ins)) {
+    const konten_baru = currentContent
+      .split("\n")
+      .map((l) =>
+        l.trim() && /^[a-z]/.test(l) && !/^[a-z0-9]+[\.\)]\s/.test(l)
+          ? l.charAt(0).toUpperCase() + l.slice(1)
+          : l
+      )
+      .join("\n")
+      .replace(/ +/g, " ")
+      .replace(/ ?([,;:]) ?/g, "$1 ")
+      .replace(/\s+([.!?])/g, "$1")
+      .replace(/\n{3,}/g, "\n\n");
+    const changed = konten_baru !== currentContent;
+    return {
+      konten_baru,
+      ringkasan: changed
+        ? `Saya merapikan ejaan dan format ${documentTitle}: huruf kapital di awal baris, spasi sebelum tanda baca, dan baris kosong ganda.`
+        : `Isi ${documentTitle} sudah cukup rapi; tidak ada perbaikan format yang perlu dilakukan.`,
+    };
+  }
+
+  // 5. Tulis ulang / perpendek
+  if (/(?:tulis ulang|tuliskan ulang|perpendek|ringkas|rangkum)/i.test(ins)) {
+    const kalimat = currentContent
+      .split(/\n+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const pendek = kalimat.slice(0, Math.max(2, Math.ceil(kalimat.length / 2))).join("\n");
+    return {
+      konten_baru: pendek,
+      ringkasan: `Versi ringkas ${documentTitle} disusun: ${kalimat.length} paragraf menjadi ${pendek.split("\n").length} paragraf. Anda tetap dapat menyimpan versi ini atau membatalkannya.`,
+    };
+  }
+
+  return {
+    konten_baru: currentContent,
+    ringkasan: `Saya tidak yakin apa yang ingin diubah pada ${documentTitle}. Coba perintah seperti: "ganti 'X' dengan 'Y'", "hapus bagian yang menyebut Z", "tambahkan klausa tentang K3", atau "perbaiki ejaan".`,
+  };
+}
+
 /* ---------------- D8: Chat RAG offline ---------------- */
 
 export async function mockChatAnswer(params: {

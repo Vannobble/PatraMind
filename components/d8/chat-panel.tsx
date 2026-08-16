@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { SendHorizonal, Sparkles, Bot, User, FileText, Loader2, CircleX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { SendHorizonal, Sparkles, Bot, User, FileText, Loader2, CircleX, PenLine, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import { useWorkspace } from "@/components/workspace/workspace-provider";
 import { BaDocument } from "@/components/workspace/ba-document";
+import type { ChatMessage } from "@/types";
 
 const SUGGESTIONS = [
   "Apa spesifikasi teknis impeller?",
@@ -14,16 +16,26 @@ const SUGGESTIONS = [
   "Berapa batas waktu pengiriman barang?",
 ];
 
+const EDIT_SUGGESTIONS = [
+  "Perbaiki ejaan dan format dokumen",
+  "Tambahkan klausa tentang jaminan mutu di akhir dokumen",
+];
+
 export function ChatPanel({
   tenderId,
   documentId,
+  canEdit = false,
+  onApplyEdit,
 }: {
   tenderId: string;
   documentId?: string;
+  canEdit?: boolean;
+  onApplyEdit?: (kontenBaru: string) => void;
 }) {
   const { chat, setChat, sendChat } = useWorkspace();
   const { messages, input, loading, error } = chat;
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [applyingId, setApplyingId] = useState<string | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -35,6 +47,34 @@ export function ChatPanel({
   async function send(text?: string) {
     if (loading) return;
     await sendChat(tenderId, text ?? input, documentId);
+  }
+
+  async function applyEdit(m: ChatMessage) {
+    if (!documentId || !m.editProposal || applyingId) return;
+    setApplyingId(m.id);
+    try {
+      const res = await fetch(`/api/documents/${documentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ konten_text: m.editProposal.konten_baru }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Gagal menerapkan edit");
+      setChat((prev) => ({
+        ...prev,
+        messages: prev.messages.map((x) =>
+          x.id === m.id ? { ...x, editApplied: true } : x
+        ),
+      }));
+      onApplyEdit?.(m.editProposal.konten_baru);
+    } catch (err) {
+      setChat((prev) => ({
+        ...prev,
+        error: err instanceof Error ? err.message : "Gagal menerapkan edit",
+      }));
+    } finally {
+      setApplyingId(null);
+    }
   }
 
   return (
@@ -55,6 +95,25 @@ export function ChatPanel({
                 {s}
               </button>
             ))}
+            {documentId && (
+              <>
+                <span className="my-1 w-full border-t border-dashed border-slate-200" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-brand-600">
+                  Perintah edit dokumen
+                </p>
+                {EDIT_SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => send(s)}
+                    disabled={loading}
+                    className="rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-[11px] text-brand-700 transition hover:border-brand-300 hover:bg-brand-100 disabled:opacity-50"
+                  >
+                    <PenLine className="mr-1 inline h-3 w-3" />
+                    {s}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         </div>
       )}
@@ -87,6 +146,47 @@ export function ChatPanel({
               <p className="whitespace-pre-wrap text-xs leading-5 text-slate-700 [text-align:start]">
                 {m.content}
               </p>
+              {m.editProposal && (
+                <div className="mt-2.5 rounded-xl border border-brand-200 bg-brand-50/50">
+                  <div className="flex items-center gap-1.5 border-b border-brand-100 px-2.5 py-1.5">
+                    <PenLine className="h-3 w-3 text-brand-700" />
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-brand-800">
+                      Usulan Edit Dokumen
+                    </span>
+                  </div>
+                  <div className="max-h-40 overflow-y-auto px-2.5 py-2">
+                    <pre className="whitespace-pre-wrap font-mono text-[10.5px] leading-4 text-slate-600">
+                      {m.editProposal.konten_baru}
+                    </pre>
+                  </div>
+                  <div className="border-t border-brand-100 px-2.5 py-2">
+                    {m.editApplied ? (
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                        <Check className="h-3.5 w-3.5" /> Diterapkan ke dokumen
+                      </span>
+                    ) : canEdit ? (
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        onClick={() => applyEdit(m)}
+                        disabled={applyingId !== null}
+                        className="h-7 w-full text-[11px]"
+                      >
+                        {applyingId === m.id ? (
+                          <Spinner className="h-3 w-3" />
+                        ) : (
+                          <PenLine className="h-3 w-3" />
+                        )}
+                        Terapkan ke Dokumen
+                      </Button>
+                    ) : (
+                      <span className="text-[10px] text-slate-400">
+                        Khusus Panitia/Admin untuk menerapkan edit.
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               {m.sources && m.sources.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {m.sources.map((s) => (

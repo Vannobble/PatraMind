@@ -12,6 +12,7 @@ import {
   mockChatAnswer,
   mockConsensus,
   mockDepartmentProposal,
+  mockDocumentEdit,
   mockEvaluateAspect,
   mockGenerateBa,
   mockScoreAssessment,
@@ -311,6 +312,52 @@ export async function chatAnswer(params: {
   });
 
   return { answer, sources: chunks.map((c) => c.sumber) };
+}
+
+/* ================= D8 — Edit Dokumen via AI ================= */
+
+const EDIT_SYSTEM = `Kamu adalah asisten yang mengedit dokumen pengadaan (format teks polos, satu paragraf per baris).
+Dokumen yang sedang dikerjakan: "{document_title}"
+
+Isi dokumen saat ini:
+{current_content}
+
+Instruksi pengguna: {instruction}
+
+Kerjakan instruksi tersebut: hasilkan SELURUH isi dokumen baru (bukan hanya bagian yang berubah), pertahankan gaya formal dan informasi yang tidak diminta diubah, dan berikan ringkasan singkat perubahan yang dilakukan (1-2 kalimat, bahasa Indonesia).
+Output dalam format JSON: { "konten_baru": "<seluruh isi dokumen baru>", "ringkasan": "<ringkasan perubahan>" }`;
+
+export async function documentEdit(params: {
+  documentTitle: string;
+  currentContent: string;
+  instruction: string;
+}): Promise<{ konten_baru: string; ringkasan: string }> {
+  if (aiMode() === "local") {
+    return mockDocumentEdit(params);
+  }
+
+  const system = EDIT_SYSTEM.replace("{document_title}", params.documentTitle)
+    .replace("{current_content}", params.currentContent.slice(0, 20000))
+    .replace("{instruction}", params.instruction.slice(0, 2000));
+
+  try {
+    const raw = await chatCompletion({
+      system,
+      user: "Terapkan instruksi edit dan kembalikan seluruh isi dokumen baru.",
+      json: true,
+      temperature: 0.2,
+    });
+    const parsed = safeJson<Partial<{ konten_baru: string; ringkasan: string }>>(raw);
+    const konten_baru = String(parsed.konten_baru ?? "").trim();
+    if (!konten_baru) throw new Error("AI tidak mengembalikan isi dokumen");
+    return {
+      konten_baru,
+      ringkasan: String(parsed.ringkasan ?? "Dokumen telah diperbarui."),
+    };
+  } catch {
+    // fallback ke editor lokal bila output tidak valid
+    return mockDocumentEdit(params);
+  }
 }
 
 /* ================= util ================= */
