@@ -26,6 +26,15 @@ export interface AssessmentChatMessage {
   created_at?: string;
 }
 
+export interface AspectChatMessage {
+  id: string;
+  evaluation_id: string;
+  aspect: Aspect;
+  role: "user" | "assistant";
+  content: string;
+  created_at?: string;
+}
+
 export interface Profile {
   id: string;
   full_name: string;

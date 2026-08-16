@@ -173,6 +173,19 @@ alter table department_assessments drop constraint if exists department_assessme
 alter table department_assessments add constraint department_assessments_status_check
   check (status in ('belum','dinilai','diskor','submitted'));
 
+-- 8d. Percakapan tanya-jawab per aspek (mode_evaluasi = 'aspek')
+create table if not exists aspect_chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  evaluation_id uuid references evaluations(id) on delete cascade,
+  aspect text not null check (aspect in ('teknis','legal','harga','k3')),
+  role text not null check (role in ('user','assistant')),
+  content text not null default '',
+  created_at timestamp default now()
+);
+
+create index if not exists aspect_chat_messages_eval_aspect_idx
+  on aspect_chat_messages (evaluation_id, aspect, created_at);
+
 -- 9. Fungsi pencarian vektor (RAG D8)
 create or replace function match_documents(
   query_embedding vector(1536),
