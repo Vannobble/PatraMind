@@ -19,13 +19,14 @@ export async function POST(request: Request) {
     const pic = String(body.pic ?? "").trim();
     const deadline = body.deadline ? String(body.deadline) : null;
     const nilai_kontrak = Number(body.nilai_kontrak ?? 0) || 0;
+    const mode_evaluasi = body.mode_evaluasi === "departemen" ? "departemen" : "aspek";
     if (!nama_pekerjaan) {
       return NextResponse.json({ error: "Nama pekerjaan wajib diisi" }, { status: 400 });
     }
 
     const { data, error } = await supabaseClient()
       .from("tenders")
-      .insert({ nama_pekerjaan, nomor_pr, klien, pic, deadline, nilai_kontrak, status: "draft" })
+      .insert({ nama_pekerjaan, nomor_pr, klien, pic, deadline, nilai_kontrak, status: "draft", mode_evaluasi })
       .select("id")
       .single();
     if (error) throw error;

@@ -69,6 +69,7 @@ export function KolaborasiTable({
               <th className="px-3 py-3">Vendor</th>
               <th className="px-3 py-3">Lokasi Simpan (Tender)</th>
               <th className="px-3 py-3">Penilaian Tim</th>
+              <th className="px-3 py-3">Skor Akhir</th>
               <th className="px-3 py-3">Konsensus</th>
               <th className="px-3 py-3">Status</th>
             </tr>
@@ -76,7 +77,7 @@ export function KolaborasiTable({
           <tbody>
             {grouped.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-5 py-12 text-center">
+                <td colSpan={7} className="px-5 py-12 text-center">
                   <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                     <Building2 className="h-6 w-6" />
                   </span>
@@ -140,6 +141,24 @@ export function KolaborasiTable({
                           );
                         })}
                       </div>
+                    </td>
+                    <td className="px-3 py-3.5">
+                      {typeof e.consensus_result?.skor_akhir === "number" ? (
+                        <span
+                          className={cn(
+                            "font-display text-base font-bold",
+                            e.consensus_result.skor_akhir >= 75
+                              ? "text-emerald-600"
+                              : e.consensus_result.skor_akhir >= 50
+                                ? "text-amber-600"
+                                : "text-red-600"
+                          )}
+                        >
+                          {e.consensus_result.skor_akhir}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-slate-400">-</span>
+                      )}
                     </td>
                     <td className="max-w-[200px] px-3 py-3.5">
                       {e.consensus_result?.rekomendasi ? (

@@ -11,8 +11,11 @@ import { chatCompletion } from "./openai";
 import {
   mockChatAnswer,
   mockConsensus,
+  mockDepartmentProposal,
   mockEvaluateAspect,
   mockGenerateBa,
+  mockScoreAssessment,
+  mockWeightedConsensus,
 } from "./mock";
 import { retrieveChunks } from "./rag";
 
@@ -173,6 +176,88 @@ export async function generateConsensus(params: {
       ? (parsed.poin_perhatian as string[])
       : [],
     rekomendasi: parsed.rekomendasi ?? "",
+  };
+}
+
+/* ================= D6b — Kolaborasi Departemen Berbobot ================= */
+
+const DEPT_PROPOSAL_SYSTEM = `Kamu adalah asisten evaluasi pengadaan dari perspektif departemen {department_name}.
+Berdasarkan spesifikasi RKS/TOR berikut: {rks_spec}
+dan dokumen penawaran vendor berikut: {vendor_offer}
+Susun USULAN PENILAIAN AWAL (maks 120 kata) dari sudut pandang {department_name}: kesesuaian lingkup, kelengkapan dokumen yang relevan bagi departemen ini, dan rekomendasi awal (layak / perlu klarifikasi).`;
+
+export async function departmentProposal(params: {
+  departmentName: string;
+  vendorName: string;
+  rksSpec: string;
+  vendorOffer: string;
+}): Promise<string> {
+  if (aiMode() === "local") {
+    return mockDepartmentProposal(params);
+  }
+  const system = DEPT_PROPOSAL_SYSTEM.replace(
+    "{department_name}",
+    params.departmentName
+  )
+    .replace("{rks_spec}", params.rksSpec.slice(0, 8000))
+    .replace("{vendor_offer}", params.vendorOffer.slice(0, 8000));
+  return chatCompletion({
+    system,
+    user: `Vendor: ${params.vendorName}`,
+    temperature: 0.3,
+  });
+}
+
+const SCORE_SYSTEM = `Kamu adalah analis sentimen penilaian pengadaan. Analisis penilaian berikut yang ditulis oleh departemen {department_name}:
+"{penilaian}"
+Berikan skor kelayakan 0-100 (semakin tinggi semakin positif/layak) dan ringkasan 1-2 kalimat.
+Output JSON: { "skor": <angka 0-100>, "ringkasan": "..." }`;
+
+export async function scoreAssessment(params: {
+  departmentName: string;
+  penilaianTeks: string;
+}): Promise<{ skor: number; ringkasan: string }> {
+  if (aiMode() === "local") {
+    return mockScoreAssessment(params);
+  }
+  const system = SCORE_SYSTEM.replace("{department_name}", params.departmentName)
+    .replace("{penilaian}", params.penilaianTeks.slice(0, 4000));
+  const raw = await chatCompletion({ system, user: "Analisis.", json: true, temperature: 0.2 });
+  const parsed = safeJson<Partial<{ skor: number; ringkasan: string }>>(raw);
+  const skor = Math.max(0, Math.min(100, Math.round(Number(parsed.skor) || 50)));
+  return { skor, ringkasan: parsed.ringkasan ?? "" };
+}
+
+const WEIGHTED_CONSENSUS_SYSTEM = `Berikut penilaian departemen untuk penawaran vendor {vendor_name} (setiap item: nama departemen, bobot %, skor 0-100, dan teks penilaian):
+{items}
+Susun konsensus akhir: hitung skor akhir tertimbang (rata-rata skor × bobot), kesimpulan keseluruhan, poin yang perlu diperhatikan, dan rekomendasi (Layak Dilanjutkan / Perlu Klarifikasi Tambahan / Tidak Layak).
+Output JSON: { "kesimpulan": ..., "poin_perhatian": [...], "rekomendasi": ..., "skor_akhir": <angka> }`;
+
+export async function weightedConsensus(params: {
+  vendorName: string;
+  items: { department: string; penilaian: string; skor: number; bobot: number }[];
+}): Promise<ConsensusJson> {
+  if (aiMode() === "local") {
+    return mockWeightedConsensus(params);
+  }
+  const items = params.items
+    .map(
+      (i) =>
+        `- ${i.department} (bobot ${i.bobot}%, skor ${i.skor}): ${i.penilaian.slice(0, 1500)}`
+    )
+    .join("\n");
+  const system = WEIGHTED_CONSENSUS_SYSTEM.replace("{vendor_name}", params.vendorName)
+    .replace("{items}", items);
+  const raw = await chatCompletion({ system, user: "Susun konsensus.", json: true, temperature: 0.3 });
+  const parsed = safeJson<Partial<ConsensusJson>>(raw);
+  return {
+    kesimpulan: parsed.kesimpulan ?? "",
+    poin_perhatian: Array.isArray(parsed.poin_perhatian)
+      ? (parsed.poin_perhatian as string[])
+      : [],
+    rekomendasi: parsed.rekomendasi ?? "",
+    skor_akhir:
+      typeof parsed.skor_akhir === "number" ? Math.round(parsed.skor_akhir) : null,
   };
 }
 

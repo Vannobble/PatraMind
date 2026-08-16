@@ -12,6 +12,15 @@ export const ROLE_LABELS: Record<Role, string> = {
   admin: "Admin",
 };
 
+export const ROLE_DEPT_MAP: Record<Role, string | null> = {
+  panitia: "Keuangan",
+  teknis: "Teknis",
+  legal: "Legal",
+  k3: "K3 / HSSE",
+  otorisator: null,
+  admin: null,
+};
+
 export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   panitia: "Mengelola project tender & memicu generate dokumen",
   teknis: "Menilai kesesuaian spesifikasi teknis penawaran",

@@ -13,6 +13,10 @@ export type AspectStatus = "belum_dinilai" | "dinilai" | "perlu_klarifikasi";
 
 export type DocJenis = "rks_tor" | "penawaran" | "lainnya";
 
+export type TenderMode = "aspek" | "departemen";
+
+export type AssessmentStatus = "belum" | "dinilai" | "diskor";
+
 export interface Profile {
   id: string;
   full_name: string;
@@ -30,6 +34,7 @@ export interface Tender {
   pic?: string;
   status: TenderStatus;
   ringkasan?: string;
+  mode_evaluasi?: TenderMode;
   created_at?: string;
 }
 
@@ -78,6 +83,7 @@ export interface ConsensusJson {
   kesimpulan: string;
   poin_perhatian: string[];
   rekomendasi: string;
+  skor_akhir?: number | null;
 }
 
 export interface Evaluation {
@@ -91,6 +97,32 @@ export interface Evaluation {
   consensus_result: ConsensusJson | null;
   status: "draft" | "final";
   created_at?: string;
+}
+
+export interface Department {
+  id: string;
+  nama: string;
+  created_at?: string;
+}
+
+export interface TenderDepartment {
+  id: string;
+  tender_id: string;
+  department_id: string;
+  bobot: number;
+}
+
+export interface DepartmentAssessment {
+  id: string;
+  evaluation_id: string;
+  department_id: string;
+  ai_proposal: string;
+  penilaian_teks: string;
+  ai_skor: number | null;
+  ai_ringkasan: string;
+  status: AssessmentStatus;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ChatMessage {

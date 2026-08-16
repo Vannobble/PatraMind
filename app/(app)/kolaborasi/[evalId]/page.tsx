@@ -6,8 +6,18 @@ import { getProfile } from "@/lib/supabase/auth";
 import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/ui/back-button";
 import { EvaluationBoard } from "@/components/d6/evaluation-board";
+import { WeightEditor } from "@/components/kolaborasi/weight-editor";
 import { DokumenRelevan } from "@/components/kolaborasi/dokumen-relevan";
-import type { DocumentRow, Evaluation, Role, Tender } from "@/types";
+import type {
+  Department,
+  DepartmentAssessment,
+  DocumentRow,
+  Evaluation,
+  Role,
+  Tender,
+  TenderDepartment,
+  TenderMode,
+} from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -36,26 +46,40 @@ export default async function KolaborasiDetailPage({
   if (!evalRow) notFound();
   const e = evalRow as Evaluation;
 
-  const [{ data: tender }, { data: evals }, { data: docs }] = await Promise.all([
-    supabaseClient()
-      .from("tenders")
-      .select("*")
-      .eq("id", e.tender_id)
-      .maybeSingle(),
-    supabaseClient()
-      .from("evaluations")
-      .select("*")
-      .eq("tender_id", e.tender_id)
-      .order("vendor_name"),
-    supabaseClient()
-      .from("documents")
-      .select("id, tender_id, jenis, nama_file, created_at")
-      .eq("tender_id", e.tender_id)
-      .order("created_at"),
-  ]);
+  const [{ data: tender }, { data: evals }, { data: docs }, depsData, tdsData, asmtData] =
+    await Promise.all([
+      supabaseClient()
+        .from("tenders")
+        .select("*")
+        .eq("id", e.tender_id)
+        .maybeSingle(),
+      supabaseClient()
+        .from("evaluations")
+        .select("*")
+        .eq("tender_id", e.tender_id)
+        .order("vendor_name"),
+      supabaseClient()
+        .from("documents")
+        .select("id, tender_id, jenis, nama_file, created_at")
+        .eq("tender_id", e.tender_id)
+        .order("created_at"),
+      supabaseClient().from("departments").select("*").order("nama"),
+      supabaseClient()
+        .from("tender_departments")
+        .select("*")
+        .eq("tender_id", e.tender_id),
+      supabaseClient()
+        .from("department_assessments")
+        .select("*")
+        .eq("evaluation_id", evalId),
+    ]);
 
   const t = (tender as Tender | null) ?? null;
   const docRows = (docs ?? []) as DocumentRow[];
+  const departments = (depsData.data ?? []) as Department[];
+  const tenderDepartments = (tdsData.data ?? []) as TenderDepartment[];
+  const assessments = (asmtData.data ?? []) as DepartmentAssessment[];
+  const canConfig = ["panitia", "admin"].includes(profile?.role ?? "");
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-8">
@@ -92,12 +116,27 @@ export default async function KolaborasiDetailPage({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-        <EvaluationBoard
-          tenderId={e.tender_id}
-          initialEvals={(evals ?? []) as Evaluation[]}
-          role={(profile?.role ?? "panitia") as Role}
-          initialVendor={e.vendor_name}
-        />
+        <div className="min-w-0 space-y-4">
+          {canConfig && (
+            <WeightEditor
+              tenderId={e.tender_id}
+              initialMode={t?.mode_evaluasi ?? "aspek"}
+              departments={departments}
+              tenderDepartments={tenderDepartments}
+              isAdmin={profile?.role === "admin"}
+            />
+          )}
+          <EvaluationBoard
+            tenderId={e.tender_id}
+            initialEvals={(evals ?? []) as Evaluation[]}
+            role={(profile?.role ?? "panitia") as Role}
+            initialVendor={e.vendor_name}
+            mode={(t?.mode_evaluasi ?? "aspek") as TenderMode}
+            departments={departments}
+            tenderDepartments={tenderDepartments}
+            initialAssessments={assessments}
+          />
+        </div>
         <DokumenRelevan docs={docRows} activeVendor={e.vendor_name} />
       </div>
     </div>

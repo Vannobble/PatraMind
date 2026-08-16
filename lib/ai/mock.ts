@@ -362,6 +362,109 @@ export async function mockConsensus(params: {
   return { kesimpulan, poin_perhatian, rekomendasi };
 }
 
+/* ---------------- D6: Konsensus bobot departemen ---------------- */
+
+const SENTIMEN_POSITIF = [
+  "layak", "memenuhi", "lengkap", "baik", "sesuai", "kompetitif", "andal",
+  "relevan", "profesional", "sesuai ketentuan", "tidak ada temuan", "tepat",
+  "unggul", "solid", "memadai", "mendukung", "terjamin", "terpenuhi", "aman",
+  "berpengalaman", "berkualitas", "transparan", "jelas", "cukup",
+];
+const SENTIMEN_NEGATIF = [
+  "tidak layak", "tidak memenuhi", "kurang", "tidak lengkap", "risiko",
+  "tidak sesuai", "mahal", "diragukan", "menyimpang", "tidak jelas",
+  "bermasalah", "kekurangan", "gagal", "tidak ada", "tidak tersedia",
+  "tidak berpengalaman", "lambat", "tidak aman", "meragukan", "perlu perbaikan",
+];
+
+export async function mockDepartmentProposal(params: {
+  departmentName: string;
+  vendorName: string;
+  rksSpec: string;
+  vendorOffer: string;
+}): Promise<string> {
+  await sleep(750);
+  const { departmentName, vendorName, rksSpec, vendorOffer } = params;
+  const lower = vendorOffer.toLowerCase();
+
+  const temuanPositif = SENTIMEN_POSITIF.filter((k) => lower.includes(k)).slice(0, 3);
+  const temuanNegatif = SENTIMEN_NEGATIF.filter((k) => lower.includes(k)).slice(0, 3);
+  const rksLead = firstSentence(rksSpec, 120);
+
+  const bagian = [
+    `Usulan penilaian awal dari perspektif ${departmentName} terhadap penawaran ${vendorName}:`,
+    `1. Kesesuaian lingkup — penawaran ${temuanPositif.length > 0 ? `menunjukkan kesesuaian (${temuanPositif.join(", ")})` : "belum menunjukkan kesesuaian yang eksplisit"} terhadap RKS (${rksLead}).`,
+    `2. Kelengkapan dokumen — ${temuanNegatif.length > 0 ? `terdapat potensi celah (${temuanNegatif.join(", ")}) yang perlu dikonfirmasi` : "dokumen pendukung tampak tersedia, mohon verifikasi kelengkapan akhir"}.`,
+    `3. Rekomendasi awal ${departmentName}: ${temuanNegatif.length >= 2 ? "perlu klarifikasi sebelum dilanjutkan" : "dapat dilanjutkan ke penilaian penuh, dengan catatan verifikasi lapangan"}.`,
+  ];
+  return bagian.join("\n");
+}
+
+export async function mockScoreAssessment(params: {
+  departmentName: string;
+  penilaianTeks: string;
+}): Promise<{ skor: number; ringkasan: string }> {
+  await sleep(650);
+  const { departmentName, penilaianTeks } = params;
+  const lower = penilaianTeks.toLowerCase();
+  const positif = SENTIMEN_POSITIF.filter((k) => lower.includes(k)).length;
+  const negatif = SENTIMEN_NEGATIF.filter((k) => lower.includes(k)).length;
+
+  let skor = Math.round(50 + (positif - negatif) * 9);
+  skor = Math.max(0, Math.min(100, skor));
+  if (positif === 0 && negatif === 0) skor = 50;
+
+  const nada =
+    skor >= 75
+      ? "positif — penilaian mendukung kelayakan vendor"
+      : skor >= 50
+        ? "cenderung netral — terdapat catatan yang perlu diverifikasi"
+        : "negatif — terdapat kekhawatiran signifikan terhadap vendor";
+  const ringkasan = `Analisis bahasa oleh AI untuk ${departmentName}: penilaian bernada ${nada}. Skor 0-100: ${skor}.`;
+
+  return { skor, ringkasan };
+}
+
+export async function mockWeightedConsensus(params: {
+  vendorName: string;
+  items: {
+    department: string;
+    penilaian: string;
+    skor: number;
+    bobot: number;
+  }[];
+}): Promise<ConsensusJson> {
+  await sleep(900);
+  const { vendorName, items } = params;
+
+  const totalBobot = items.reduce((a, i) => a + i.bobot, 0) || 100;
+  const skorAkhir = Math.round(
+    items.reduce((a, i) => a + i.skor * i.bobot, 0) / totalBobot
+  );
+
+  let rekomendasi: string;
+  if (skorAkhir >= 75) rekomendasi = "Layak Dilanjutkan";
+  else if (skorAkhir >= 50) rekomendasi = "Perlu Klarifikasi Tambahan";
+  else rekomendasi = "Tidak Layak";
+
+  const rincian = items
+    .map(
+      (i) =>
+        `${i.department} (bobot ${i.bobot}%): skor ${i.skor} — ${firstSentence(i.penilaian, 90)}`
+    )
+    .join(". ");
+
+  const poin_perhatian = items
+    .filter((i) => i.skor < 60)
+    .map((i) => `${i.department} memberi skor ${i.skor} — perlu tindak lanjut: ${firstSentence(i.penilaian, 120)}`);
+  if (poin_perhatian.length === 0)
+    poin_perhatian.push("Seluruh departemen memberikan penilaian di atas ambang, tanpa temuan signifikan.");
+
+  const kesimpulan = `Konsensus tertimbang atas penawaran ${vendorName} menggabungkan ${items.length} departemen: ${rincian}. Skor akhir tertimbang: ${skorAkhir}/100. Rekomendasi: ${rekomendasi}.`;
+
+  return { kesimpulan, poin_perhatian, rekomendasi, skor_akhir: skorAkhir };
+}
+
 /* ---------------- D8: Chat RAG offline ---------------- */
 
 export async function mockChatAnswer(params: {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useWorkspace } from "@/components/workspace/workspace-provider";
+import { cn } from "@/lib/utils";
 import type { ConsensusJson } from "@/types";
 
 const REKOMENDASI_CLS: Record<string, string> = {
@@ -137,6 +138,39 @@ export function ConsensusPanel({
 
       {consensus ? (
         <div className="mt-4 space-y-3">
+          {typeof consensus.skor_akhir === "number" && (
+            <div className="flex items-center gap-3 rounded-lg border border-brand-200 bg-white px-4 py-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Skor Akhir Tertimbang
+              </span>
+              <span
+                className={cn(
+                  "font-display text-2xl font-bold",
+                  consensus.skor_akhir >= 75
+                    ? "text-emerald-600"
+                    : consensus.skor_akhir >= 50
+                      ? "text-amber-600"
+                      : "text-red-600"
+                )}
+              >
+                {consensus.skor_akhir}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">/ 100</span>
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className={cn(
+                    "h-full rounded-full",
+                    consensus.skor_akhir >= 75
+                      ? "bg-emerald-500"
+                      : consensus.skor_akhir >= 50
+                        ? "bg-amber-500"
+                        : "bg-red-500"
+                  )}
+                  style={{ width: `${consensus.skor_akhir}%` }}
+                />
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Rekomendasi Akhir

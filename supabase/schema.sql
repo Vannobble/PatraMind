@@ -50,6 +50,28 @@ alter table tenders add constraint tenders_status_check
 -- Migrasi idempotent: ringkasan tender (rangkuman naratif per tender)
 alter table tenders add column if not exists ringkasan text not null default '';
 
+-- Migrasi idempotent: mode evaluasi kolaborasi per tender
+alter table tenders add column if not exists mode_evaluasi text not null default 'aspek';
+alter table tenders drop constraint if exists tenders_mode_evaluasi_check;
+alter table tenders add constraint tenders_mode_evaluasi_check
+  check (mode_evaluasi in ('aspek','departemen'));
+
+-- 3b. Master departemen (global, bisa ditambah/dihapus admin)
+create table if not exists departments (
+  id uuid primary key default gen_random_uuid(),
+  nama text not null unique,
+  created_at timestamp default now()
+);
+
+-- 3c. Bobot departemen per tender (mode_evaluasi = 'departemen')
+create table if not exists tender_departments (
+  id uuid primary key default gen_random_uuid(),
+  tender_id uuid references tenders(id) on delete cascade,
+  department_id uuid references departments(id) on delete cascade,
+  bobot int not null default 0,
+  unique (tender_id, department_id)
+);
+
 -- 4. Dokumen (RKS/TOR, penawaran, dll)
 create table if not exists documents (
   id uuid primary key default gen_random_uuid(),
@@ -116,6 +138,22 @@ create table if not exists chat_history (
 
 -- Migrasi idempotent: konteks chat per dokumen
 alter table chat_history add column if not exists document_id uuid references documents(id) on delete cascade;
+
+-- 8b. Penilaian per departemen (mode_evaluasi = 'departemen')
+create table if not exists department_assessments (
+  id uuid primary key default gen_random_uuid(),
+  evaluation_id uuid references evaluations(id) on delete cascade,
+  department_id uuid references departments(id) on delete cascade,
+  ai_proposal text not null default '',
+  penilaian_teks text not null default '',
+  ai_skor numeric,
+  ai_ringkasan text not null default '',
+  status text not null default 'belum'
+    check (status in ('belum','dinilai','diskor')),
+  created_at timestamp default now(),
+  updated_at timestamp default now(),
+  unique (evaluation_id, department_id)
+);
 
 -- 9. Fungsi pencarian vektor (RAG D8)
 create or replace function match_documents(

@@ -6,14 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { EvaluationColumn } from "./evaluation-column";
+import { DepartmentBoard } from "./department-board";
 import { ConsensusPanel } from "./consensus-panel";
 import { ASPECT_ORDER, ASPECT_META, ROLE_LABELS } from "@/lib/constants";
 import type {
   Aspect,
   AspectInput,
   ConsensusJson,
+  Department,
+  DepartmentAssessment,
   Evaluation,
   Role,
+  TenderDepartment,
+  TenderMode,
 } from "@/types";
 
 export function EvaluationBoard({
@@ -21,13 +26,24 @@ export function EvaluationBoard({
   initialEvals,
   role,
   initialVendor,
+  mode,
+  departments,
+  tenderDepartments,
+  initialAssessments,
 }: {
   tenderId: string;
   initialEvals: Evaluation[];
   role: Role;
   initialVendor?: string;
+  mode: TenderMode;
+  departments: Department[];
+  tenderDepartments: TenderDepartment[];
+  initialAssessments: DepartmentAssessment[];
 }) {
   const [evals, setEvals] = useState<Evaluation[]>(initialEvals);
+  const [assessments, setAssessments] = useState<DepartmentAssessment[]>(
+    initialAssessments
+  );
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,11 +125,23 @@ export function EvaluationBoard({
           <div className="text-xs leading-6 text-purple-800">
             <p className="font-bold">Modul D6 — Evaluation Collaboration Hub</p>
             <p>
-              Alur: <b>Review</b> (4 aspek paralel, dibantu AI) →{" "}
-              <b>Collaborate</b> (catatan &amp; status per aspek) →{" "}
-              <b>Consensus</b> (ringkasan akhir + approval Otorisator). Peran
-              Anda: <b>{ROLE_LABELS[role]}</b> — kolom selain aspek Anda tampil
-              read-only.
+              {mode === "departemen" ? (
+                <>
+                  Alur: <b>Usulan AI</b> (draft per departemen) →{" "}
+                  <b>Penilaian Departemen</b> (bahasa manusia) →{" "}
+                  <b>Skor AI 0–100</b> → <b>Konsensus tertimbang</b> sesuai
+                  bobot. Peran Anda: <b>{ROLE_LABELS[role]}</b> — departemen
+                  selain milik Anda tampil read-only.
+                </>
+              ) : (
+                <>
+                  Alur: <b>Review</b> (4 aspek paralel, dibantu AI) →{" "}
+                  <b>Collaborate</b> (catatan &amp; status per aspek) →{" "}
+                  <b>Consensus</b> (ringkasan akhir + approval Otorisator).
+                  Peran Anda: <b>{ROLE_LABELS[role]}</b> — kolom selain aspek
+                  Anda tampil read-only.
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -125,8 +153,9 @@ export function EvaluationBoard({
             Evaluasi {selectedVendor} belum dimulai
           </p>
           <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-slate-500">
-            Mulai evaluasi untuk membuka 4 kolom aspek. Setiap role mengisi
-            aspeknya, lalu Panitia/Otorisator me-generate konsensus.
+            {mode === "departemen"
+              ? "Mulai evaluasi untuk membuka kartu penilaian per departemen."
+              : "Mulai evaluasi untuk membuka 4 kolom aspek. Setiap role mengisi aspeknya, lalu Panitia/Otorisator me-generate konsensus."}
           </p>
           <Button
             size="sm"
@@ -148,24 +177,35 @@ export function EvaluationBoard({
 
       {selectedVendor && current && (
         <>
-          <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
-            {ASPECT_ORDER.map((aspect) => (
-              <EvaluationColumn
-                key={aspect}
-                aspect={aspect}
-                tenderId={tenderId}
-                vendorName={selectedVendor}
-                evaluationId={current.id}
-                initial={
-                  (current as unknown as Record<string, AspectInput | null>)[
-                    `${aspect}_input`
-                  ]
-                }
-                canEdit={canEdit(aspect)}
-                onSaved={(input) => onSaved(aspect, input)}
-              />
-            ))}
-          </div>
+          {mode === "departemen" ? (
+            <DepartmentBoard
+              evaluation={current}
+              departments={departments}
+              tenderDepartments={tenderDepartments}
+              assessments={assessments}
+              role={role}
+              onAssessments={setAssessments}
+            />
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+              {ASPECT_ORDER.map((aspect) => (
+                <EvaluationColumn
+                  key={aspect}
+                  aspect={aspect}
+                  tenderId={tenderId}
+                  vendorName={selectedVendor}
+                  evaluationId={current.id}
+                  initial={
+                    (current as unknown as Record<string, AspectInput | null>)[
+                      `${aspect}_input`
+                    ]
+                  }
+                  canEdit={canEdit(aspect)}
+                  onSaved={(input) => onSaved(aspect, input)}
+                />
+              ))}
+            </div>
+          )}
 
           <ConsensusPanel
             tenderId={tenderId}

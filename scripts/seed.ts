@@ -863,11 +863,117 @@ async function seedTenderAndDocs(seed: TenderSeed) {
   }
 }
 
+/* ---------------- departemen & demo bobot ---------------- */
+
+const DEFAULT_DEPARTMENTS = ["Teknis", "Legal", "Keuangan", "K3 / HSSE"];
+
+async function seedDepartments() {
+  for (const nama of DEFAULT_DEPARTMENTS) {
+    const { data } = await supabase
+      .from("departments")
+      .select("id")
+      .eq("nama", nama)
+      .maybeSingle();
+    if (!data) {
+      const { error } = await supabase.from("departments").insert({ nama });
+      if (error && error.code !== "23505") throw error;
+      log(`departemen dibuat: ${nama}`);
+    }
+  }
+
+  // Demo: Event K3 -> mode departemen + bobot + penilaian contoh
+  const { data: tender } = await supabase
+    .from("tenders")
+    .select("id")
+    .eq("nomor_pr", "PR-26-003388")
+    .maybeSingle();
+  if (!tender) return;
+
+  const { data: deps } = await supabase.from("departments").select("id, nama");
+  const depMap = new Map((deps ?? []).map((d) => [d.nama, d.id]));
+  const bobotDemo: [string, number][] = [
+    ["K3 / HSSE", 35],
+    ["Teknis", 30],
+    ["Legal", 20],
+    ["Keuangan", 15],
+  ];
+
+  await supabase
+    .from("tenders")
+    .update({ mode_evaluasi: "departemen" })
+    .eq("id", tender.id);
+  await supabase.from("tender_departments").delete().eq("tender_id", tender.id);
+  for (const [nama, bobot] of bobotDemo) {
+    const depId = depMap.get(nama);
+    if (!depId) continue;
+    const { error } = await supabase
+      .from("tender_departments")
+      .insert({ tender_id: tender.id, department_id: depId, bobot });
+    if (error) throw error;
+  }
+  log("Event K3 -> mode departemen (bobot: K3 35, Teknis 30, Legal 20, Keuangan 15)");
+
+  const { data: evals } = await supabase
+    .from("evaluations")
+    .select("id, vendor_name")
+    .eq("tender_id", tender.id);
+  const contoh: Record<string, [string, string, number]> = {
+    Teknis: [
+      "Spesifikasi venue, booth, dan simulasi tanggap darurat sesuai RKS; tim instruktur tersertifikasi.",
+      "Kebutuhan teknis terpenuhi dengan baik, kapasitas sesuai rencana acara.",
+      82,
+    ],
+    Legal: [
+      "Kelengkapan izin usaha dan dokumen administrasi perusahaan dalam kondisi lengkap.",
+      "Dokumen legal lengkap tanpa temuan berarti.",
+      88,
+    ],
+    Keuangan: [
+      "Penawaran harga berada di bawah HPS dengan rincian komponen yang wajar.",
+      "Harga kompetitif dan sesuai estimasi anggaran.",
+      79,
+    ],
+    "K3 / HSSE": [
+      "Protokol K3 acara, asuransi peserta, dan SLA tanggap darurat tercantum secara memadai.",
+      "Kepatuhan K3 baik; sedikit catatan pada jadwal simulasi.",
+      84,
+    ],
+  };
+
+  for (const ev of evals ?? []) {
+    for (const [depNama, [proposal, penilaian, skor]] of Object.entries(contoh)) {
+      const depId = depMap.get(depNama);
+      if (!depId) continue;
+      const { data: existing } = await supabase
+        .from("department_assessments")
+        .select("id")
+        .eq("evaluation_id", ev.id)
+        .eq("department_id", depId)
+        .maybeSingle();
+      if (existing) continue;
+      const { error } = await supabase
+        .from("department_assessments")
+        .insert({
+          evaluation_id: ev.id,
+          department_id: depId,
+          ai_proposal: proposal,
+          penilaian_teks: penilaian,
+          ai_skor: skor,
+          ai_ringkasan: `Analisis bahasa oleh AI untuk ${depNama}: penilaian positif. Skor 0-100: ${skor}.`,
+          status: "diskor",
+        });
+      if (error) throw error;
+    }
+    log(`penilaian departemen demo dibuat untuk ${ev.vendor_name}`);
+  }
+}
+
 /* ---------------- main ---------------- */
 
 async function main() {
   log("Mulai seeding PATRAMIND...");
   await upsertDemoUsers();
+  await seedDepartments();
   for (const seed of TENDER_SEEDS) {
     await seedTenderAndDocs(seed);
   }
