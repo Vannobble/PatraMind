@@ -4,6 +4,42 @@ import { getApiUser } from "@/lib/api-auth";
 import { chunkDocument, mockEmbedding } from "@/lib/ai/rag";
 import type { DocJenis, DocumentRow } from "@/types";
 
+export async function GET(request: Request) {
+  try {
+    const { user } = await getApiUser();
+    if (!user) {
+      return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
+    }
+
+    const url = new URL(request.url);
+    const tenderId = String(url.searchParams.get("tenderId") ?? "");
+    const jenis = String(url.searchParams.get("jenis") ?? "");
+
+    if (!tenderId) {
+      return NextResponse.json({ error: "Parameter tenderId wajib diisi" }, { status: 400 });
+    }
+
+    let query = supabaseClient()
+      .from("documents")
+      .select("id, tender_id, jenis, nama_file, konten_text, created_at")
+      .eq("tender_id", tenderId)
+      .order("created_at", { ascending: false });
+    if (jenis) {
+      query = query.eq("jenis", jenis);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json({ docs: data as DocumentRow[] });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Gagal mengambil dokumen" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const { user, profile } = await getApiUser();

@@ -94,14 +94,26 @@ export async function generateBa(params: {
 
 const ASPECT_SYSTEM = `Kamu adalah asisten evaluasi {aspect_label} pengadaan barang. Berdasarkan spesifikasi RKS/TOR berikut: {rks_spec}
 dan dokumen penawaran vendor berikut: {vendor_offer}
-Berikan analisis singkat (maks 150 kata) meliputi: kesesuaian spesifikasi, potensi risiko/gap, dan rekomendasi awal (Layak/Tidak Layak/Perlu Klarifikasi).`;
+Berikan:
+1. analysis — analisis singkat (maks 150 kata) meliputi kesesuaian spesifikasi, potensi risiko/gap, dan rekomendasi awal.
+2. skor — angka 0-100 kesesuaian.
+3. sesuai — daftar poin yang terpenuhi (maks 4).
+4. kurang — daftar poin yang kurang/tidak terpenuhi (maks 4).
+5. catatan — daftar catatan tambahan (maks 3).
+Output dalam format JSON: { "analysis": ..., "skor": <0-100>, "sesuai": [...], "kurang": [...], "catatan": [...] }`;
 
 export async function evaluateAspect(params: {
   aspect: Aspect;
   vendorName: string;
   rksSpec: string;
   vendorOffer: string;
-}): Promise<{ analysis: string; rekomendasi: string; status: AspectStatus }> {
+}): Promise<{
+  analysis: string;
+  rekomendasi: string;
+  status: AspectStatus;
+  skor: number;
+  poin: { sesuai: string[]; kurang: string[]; catatan: string[] };
+}> {
   if (aiMode() === "local") {
     return mockEvaluateAspect(params);
   }
@@ -119,21 +131,50 @@ export async function evaluateAspect(params: {
     .replace("{rks_spec}", params.rksSpec.slice(0, 8000))
     .replace("{vendor_offer}", params.vendorOffer.slice(0, 8000));
 
-  const analysis = await chatCompletion({
+  const raw = await chatCompletion({
     system,
     user: `Vendor: ${params.vendorName}`,
+    json: true,
     temperature: 0.3,
   });
+  const parsed = safeJson<
+    Partial<{
+      analysis: string;
+      skor: number;
+      sesuai: string[];
+      kurang: string[];
+      catatan: string[];
+    }>
+  >(raw);
 
-  const lower = analysis.toLowerCase();
-  const status: AspectStatus = lower.includes("tidak layak")
-    ? "belum_dinilai"
-    : lower.includes("klarifikasi")
-      ? "perlu_klarifikasi"
-      : "dinilai";
-  const rekomendasi = status === "dinilai" ? "Layak" : status === "perlu_klarifikasi" ? "Perlu Klarifikasi" : "Tidak Layak";
+  const analysis = String(parsed.analysis ?? "").trim();
+  const skor = Math.max(0, Math.min(100, Math.round(Number(parsed.skor) || 50)));
+  const status: AspectStatus =
+    skor >= 60 ? "dinilai" : skor >= 35 ? "perlu_klarifikasi" : "belum_dinilai";
+  const rekomendasi =
+    status === "dinilai"
+      ? "Layak"
+      : status === "perlu_klarifikasi"
+        ? "Perlu Klarifikasi"
+        : "Tidak Layak";
 
-  return { analysis, rekomendasi, status };
+  return {
+    analysis,
+    rekomendasi,
+    status,
+    skor,
+    poin: {
+      sesuai: Array.isArray(parsed.sesuai)
+        ? (parsed.sesuai as string[]).map(String).slice(0, 4)
+        : [],
+      kurang: Array.isArray(parsed.kurang)
+        ? (parsed.kurang as string[]).map(String).slice(0, 4)
+        : [],
+      catatan: Array.isArray(parsed.catatan)
+        ? (parsed.catatan as string[]).map(String).slice(0, 3)
+        : [],
+    },
+  };
 }
 
 /* ================= D6 — Consensus ================= */

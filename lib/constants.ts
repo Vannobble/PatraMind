@@ -1,4 +1,4 @@
-import type { Aspect, Role } from "@/types";
+import type { Aspect, AspectCategoryConfig, Role } from "@/types";
 
 export const APP_NAME = "PATRAMIND";
 export const APP_TAGLINE = "One Context. Everyone Aligned.";
@@ -108,6 +108,49 @@ export const ASPECT_META: Record<
 };
 
 export const ASPECT_ORDER: Aspect[] = ["teknis", "legal", "harga", "k3"];
+
+export const ASPECT_CONFIG: Record<Aspect, AspectCategoryConfig> = {
+  teknis: {
+    judul: "Teknis",
+    deskripsi: "Kesesuaian spesifikasi vs RKS",
+    kriteria: [
+      "Spesifikasi material & komponen sesuai RKS",
+      "Kapasitas / kinerja (flow, head, daya) memenuhi kebutuhan",
+      "Kelayakan jadwal pengiriman & pengerjaan",
+      "Ketersediaan dukungan teknis & garansi",
+    ],
+  },
+  legal: {
+    judul: "Legal",
+    deskripsi: "Kelengkapan & keabsahan dokumen legal",
+    kriteria: [
+      "Akta pendirian & perubahan terakhir",
+      "NPWP & status kepatuhan pajak",
+      "Izin usaha (NIB/IUJK) masih berlaku",
+      "Surat domisili, surat kuasa & kelengkapan administrasi",
+    ],
+  },
+  harga: {
+    judul: "Harga",
+    deskripsi: "Kewajaran harga penawaran",
+    kriteria: [
+      "Nilai penawaran di bawah HPS",
+      "Rincian komponen biaya wajar & lengkap",
+      "Ketentuan pajak (PPN) & pembayaran sesuai",
+      "Biaya pengiriman / garansi tercantum",
+    ],
+  },
+  k3: {
+    judul: "K3",
+    deskripsi: "Kepatuhan terhadap standar K3",
+    kriteria: [
+      "Sertifikat K3 (SMK3 / ISO 45001) masih berlaku",
+      "SOP & program keselamatan kerja terdokumentasi",
+      "Riwayat kecelakaan kerja / temuan signifikan",
+      "Kepatuhan lingkungan & jaminan layanan (SLA)",
+    ],
+  },
+};
 
 export const ASPECT_STATUS_LABELS: Record<
   string,

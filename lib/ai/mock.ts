@@ -191,7 +191,13 @@ export async function mockEvaluateAspect(params: {
   vendorName: string;
   rksSpec: string;
   vendorOffer: string;
-}): Promise<{ analysis: string; rekomendasi: string; status: AspectStatus }> {
+}): Promise<{
+  analysis: string;
+  rekomendasi: string;
+  status: AspectStatus;
+  skor: number;
+  poin: { sesuai: string[]; kurang: string[]; catatan: string[] };
+}> {
   await sleep(750);
   const { aspect, vendorName, rksSpec, vendorOffer } = params;
   const lowerOffer = vendorOffer.toLowerCase();
@@ -294,7 +300,24 @@ export async function mockEvaluateAspect(params: {
         ? "Perlu Klarifikasi"
         : "Tidak Layak";
 
-  return { analysis: analysis + ` (Ringkasan penawaran: ${short})`, rekomendasi, status };
+  const skor = Math.round(pct * 100);
+  const sesuai = meta.checklist
+    .filter((k) => lowerOffer.includes(k))
+    .map((k) => `Kriteria "${k}" teridentifikasi pada dokumen penawaran`);
+  const kurang = missing.map(
+    (k) => `Kriteria "${k}" belum teridentifikasi pada dokumen penawaran`
+  );
+  const catatanPoin = [
+    `Rekomendasi awal: ${rekomendasi.toLowerCase()}${missing.length > 0 ? " — mohon klarifikasi untuk kriteria yang belum teridentifikasi" : ""}`,
+  ];
+
+  return {
+    analysis: analysis + ` (Ringkasan penawaran: ${short})`,
+    rekomendasi,
+    status,
+    skor,
+    poin: { sesuai, kurang, catatan: catatanPoin },
+  };
 }
 
 /* ---------------- D6: Consensus ---------------- */

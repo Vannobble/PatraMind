@@ -55,6 +55,9 @@ export async function POST(request: Request) {
       analysis: result.analysis,
       rekomendasi: result.rekomendasi,
       status,
+      skor: result.skor,
+      poin: result.poin,
+      analyzedAt: new Date().toISOString(),
     });
   } catch (err) {
     return NextResponse.json(

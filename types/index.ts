@@ -94,7 +94,16 @@ export interface AspectInput {
   analysis: string;
   catatan: string;
   status: AspectStatus;
+  skor?: number | null;
+  poin?: { sesuai: string[]; kurang: string[]; catatan: string[] } | null;
+  analyzed_at?: string | null;
   updated_by?: string;
+}
+
+export interface AspectCategoryConfig {
+  judul: string;
+  deskripsi: string;
+  kriteria: string[];
 }
 
 export interface ConsensusJson {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { EvaluationColumn } from "./evaluation-column";
+import { AspectSidePanel } from "./aspect-side-panel";
 import { DepartmentBoard } from "./department-board";
 import { ConsensusPanel } from "./consensus-panel";
 import { ASPECT_META, ASPECT_ORDER, ROLE_LABELS } from "@/lib/constants";
@@ -205,6 +206,29 @@ export function EvaluationBoard({
               role={role}
               onAssessments={setAssessments}
             />
+          ) : visibleAspects.length === 1 ? (
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <EvaluationColumn
+                aspect={visibleAspects[0]}
+                tenderId={tenderId}
+                vendorName={selectedVendor}
+                evaluationId={current.id}
+                initial={
+                  (current as unknown as Record<string, AspectInput | null>)[
+                    `${visibleAspects[0]}_input`
+                  ]
+                }
+                canEdit={canEdit(visibleAspects[0])}
+                onSaved={(input) => onSaved(visibleAspects[0], input)}
+              />
+              <div className="hidden lg:block">
+                <AspectSidePanel
+                  tenderId={tenderId}
+                  vendorName={selectedVendor}
+                  aspect={visibleAspects[0]}
+                />
+              </div>
+            </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
               {visibleAspects.map((aspect) => (
