@@ -475,6 +475,30 @@ function lowerTrim(text: string): string {
   return text.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
+function stripQuotes(text: string): string {
+  return text.replace(/^["“']+|["”']+$/g, "").trim();
+}
+
+const MONTH_WORDS =
+  /(?:januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)/i;
+
+function isSectionHeading(line: string): boolean {
+  const t = line.trim();
+  if (t.length >= 120) return false;
+  if (MONTH_WORDS.test(t)) return false;
+  return /^\d+(?:\.\d+)*[\.\)]?\s+[A-Za-z]/.test(t);
+}
+
+function documentExcerpt(content: string, maxLines = 3): string {
+  return content
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(0, maxLines)
+    .join(" | ")
+    .slice(0, 300);
+}
+
 export async function mockDocumentEdit(params: {
   documentTitle: string;
   currentContent: string;
@@ -484,51 +508,98 @@ export async function mockDocumentEdit(params: {
   const { documentTitle, currentContent, instruction } = params;
   const ins = lowerTrim(instruction);
 
-  // 1. Ganti "X" dengan "Y"
-  const ganti = ins.match(/(?:ganti|ubah|replace)\s+["“']([^"”']{2,120})["”']\s+(?:dengan|menjadi|ke|jadi)\s+["“']([^"”']{2,300})["”']/i);
+  // 1. Ganti X menjadi Y (dengan atau tanpa tanda kutip)
+  const ganti = ins.match(
+    /^(?:ganti|ubah|replace)(?:\s+(?:kata|kata-kata|frasa|teks|tulisan|isi|istilah|judul))?\s+["“']?([^"”']{1,200})["”']?\s+(?:menjadi|dengan|jadi|ke)\s+["“']?([^"”']{1,400})["”']?$/i
+  );
   if (ganti) {
-    const [_, from, to] = ganti;
-    const re = new RegExp(escRe(from), "gi");
-    if (!re.test(currentContent)) {
+    const from = stripQuotes(ganti[1]);
+    const to = stripQuotes(ganti[2]);
+    if (!from || !to || from === to) {
       return {
         konten_baru: currentContent,
-        ringkasan: `Saya tidak menemukan frasa "${from}" pada dokumen ${documentTitle}. Tidak ada perubahan yang dilakukan — perintahkan saya dengan frasa yang persis ada di dokumen.`,
+        ringkasan: `Instruksi "ganti" tidak jelas. Contoh: ganti "1. PENDAHULUAN" menjadi "1. Pengantar" (tanda kutip boleh dipakai atau tidak).`,
       };
     }
-    const konten_baru = currentContent.replace(new RegExp(escRe(from), "gi"), to);
+    if (!currentContent.toLowerCase().includes(from.toLowerCase())) {
+      return {
+        konten_baru: currentContent,
+        ringkasan: `Saya tidak menemukan frasa "${from}" pada ${documentTitle}. Tidak ada perubahan yang dilakukan — perintahkan saya dengan frasa yang persis ada di dokumen. ${currentContent.trim() ? `Dokumen diawali dengan: ${documentExcerpt(currentContent)}` : ""}`,
+      };
+    }
+    const konten_baru = currentContent.replace(
+      new RegExp(escRe(from), "gi"),
+      to
+    );
     return {
       konten_baru,
       ringkasan: `Saya mengganti "${from}" menjadi "${to}" pada ${documentTitle}. Jumlah penggantian: ${countOccurrences(currentContent, from)}.`,
     };
   }
 
-  // 2. Hapus baris/frasa yang mengandung kata kunci
-  const hapus = ins.match(/(?:hapus|buang|hilangkan)\s+["“']?([^"”']{2,120})["”']?/i);
+  // 2. Hapus seksi/bagian yang menyebut kata kunci (sampai heading berikutnya)
+  const hapus = ins.match(/^(?:hapus|buang|hilangkan)\s+(.+)$/i);
   if (hapus) {
-    const target = hapus[1].trim();
-    const lines = currentContent.split("\n");
-    const kept = lines.filter((l) => !lowerTrim(l).includes(lowerTrim(target)));
-    if (kept.length === lines.length) {
+    const target = stripQuotes(hapus[1])
+      .replace(
+        /^(?:bagian|seksi|baris|kalimat|paragraf|semua|seluruh|isi|isinya|teks|tulisan|poin|butir)\s*(?:yang\s*)?/,
+        ""
+      )
+      .replace(
+        /^(?:yang\s*)?(?:menyebut|mengandung|berisi|berisikan|membahas|berkaitan\s+dengan|terkait\s+dengan|tentang|mengenai|berjudul)\s+/,
+        ""
+      )
+      .trim();
+    if (!target) {
       return {
         konten_baru: currentContent,
-        ringkasan: `Saya tidak menemukan bagian yang mengandung "${target}" pada ${documentTitle}. Tidak ada yang dihapus — coba perintah dengan kata kunci yang lebih tepat.`,
+        ringkasan: `Instruksi "hapus" tidak jelas. Contoh: hapus bagian yang menyebut "jadwal pelaksanaan".`,
       };
     }
-    const removed = lines.length - kept.length;
+    const needle = lowerTrim(target);
+    const lines = currentContent.split("\n");
+    const kept: string[] = [];
+    let skipping = false;
+    let removed = 0;
+    for (const line of lines) {
+      if (skipping && isSectionHeading(line)) skipping = false;
+      if (!skipping && lowerTrim(line).includes(needle)) {
+        skipping = true;
+        removed++;
+        continue;
+      }
+      if (skipping) {
+        removed++;
+        continue;
+      }
+      kept.push(line);
+    }
+    if (removed === 0) {
+      return {
+        konten_baru: currentContent,
+        ringkasan: `Saya tidak menemukan bagian yang menyebut "${target}" pada ${documentTitle}. Tidak ada yang dihapus — coba kata kunci yang lebih tepat. ${currentContent.trim() ? `Bagian yang ada: ${documentExcerpt(currentContent)}` : ""}`,
+      };
+    }
     return {
       konten_baru: kept.join("\n").replace(/\n{3,}/g, "\n\n").trim(),
-      ringkasan: `Saya menghapus ${removed} baris yang mengandung "${target}" dari ${documentTitle}.`,
+      ringkasan: `Saya menghapus bagian yang menyebut "${target}" (${removed} baris) dari ${documentTitle}.`,
     };
   }
 
-  // 3. Tambahkan paragraf/klausa di akhir dokumen
-  const tambah = ins.match(/(?:tambahkan|tambah|sisipkan|buatkan)\s+["“']?([^"”']{2,300})["”']?(?:\s+(?:di|pada|setelah)\s+(?:akhir|bagian)?\s*["“']?([^"”']{2,80})?["”']?)?/i);
+  // 3. Tambahkan paragraf/klausa (opsional: di akhir dokumen)
+  const tambah = ins.match(/^(?:tambahkan?|sisipkan|buatkan)\s+(.+)$/i);
   if (tambah) {
-    const teksBaru = (tambah[1] ?? "").trim().replace(/^klausa\s+/i, "Klausa ");
+    let teksBaru = stripQuotes(tambah[1]);
+    const lokasi = teksBaru.match(
+      /\s+(?:di|pada|setelah)\s+(?:bagian\s+)?(?:akhir|belakang)(?:\s+dokumen)?\s*$/
+    );
+    if (lokasi?.index !== undefined) teksBaru = teksBaru.slice(0, lokasi.index);
+    teksBaru = teksBaru.replace(/^klausa\s+/i, "Klausa ").trim();
     if (!teksBaru) {
       return {
         konten_baru: currentContent,
-        ringkasan: "Instruksi penambahan tidak jelas. Contoh: \"Tambahkan klausa tentang jaminan mutu di akhir dokumen\".",
+        ringkasan:
+          "Instruksi penambahan tidak jelas. Contoh: \"Tambahkan klausa tentang jaminan mutu di akhir dokumen\".",
       };
     }
     const konten_baru = `${currentContent.replace(/\s+$/, "")}\n\n${teksBaru}\n`;
@@ -576,7 +647,7 @@ export async function mockDocumentEdit(params: {
 
   return {
     konten_baru: currentContent,
-    ringkasan: `Saya tidak yakin apa yang ingin diubah pada ${documentTitle}. Coba perintah seperti: "ganti 'X' dengan 'Y'", "hapus bagian yang menyebut Z", "tambahkan klausa tentang K3", atau "perbaiki ejaan".`,
+    ringkasan: `Saya belum memahami instruksi "${firstSentence(instruction, 80)}" untuk ${documentTitle}. Coba perintah seperti: ganti "1. PENDAHULUAN" menjadi "1. Pengantar", hapus bagian yang menyebut "jadwal pelaksanaan", tambahkan klausa tentang K3, atau perbaiki ejaan dan format.${currentContent.trim() ? `\n\nDokumen diawali dengan: ${documentExcerpt(currentContent)}` : ""}`,
   };
 }
 
