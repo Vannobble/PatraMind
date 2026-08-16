@@ -77,6 +77,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
             role: "assistant",
             content: json.answer,
             sources: json.sources ?? [],
+            editProposal: json.editProposal ?? null,
           },
         ],
       }));
