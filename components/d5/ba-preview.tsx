@@ -5,6 +5,7 @@ import { CheckCircle2, Pencil, Save, FileCheck2, Copy, AlertCircle } from "lucid
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaDocument } from "@/components/workspace/ba-document";
+import { BaChatPanel } from "@/components/d5/ba-chat-panel";
 import { Spinner } from "@/components/ui/spinner";
 import type { BaJson } from "@/types";
 
@@ -119,27 +120,38 @@ export function BAPreview({
         </div>
       </div>
 
-      {editing ? (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <AlertCircle className="h-3.5 w-3.5" />
-            Mode edit — ubah struktur JSON di bawah, lalu simpan.
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+        {editing ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <AlertCircle className="h-3.5 w-3.5" />
+              Mode edit — ubah struktur JSON di bawah, lalu simpan.
+            </div>
+            <textarea
+              value={jsonText}
+              onChange={(e) => setJsonText(e.target.value)}
+              className="min-h-[420px] w-full rounded-lg border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+              spellCheck={false}
+            />
+            {jsonError && (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+                {jsonError}
+              </p>
+            )}
           </div>
-          <textarea
-            value={jsonText}
-            onChange={(e) => setJsonText(e.target.value)}
-            className="min-h-[420px] w-full rounded-lg border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
-            spellCheck={false}
-          />
-          {jsonError && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
-              {jsonError}
-            </p>
-          )}
-        </div>
-      ) : (
-        <BaDocument ba={ba} status={status} />
-      )}
+        ) : (
+          <div className="min-w-0">
+            <BaDocument ba={ba} status={status} />
+          </div>
+        )}
+        <BaChatPanel
+          ba={ba}
+          onApplyEdit={(baBaru) => {
+            if (editing) setEditing(false);
+            void onSave("draft", baBaru);
+          }}
+        />
+      </div>
     </div>
   );
 }

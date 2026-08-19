@@ -50,6 +50,7 @@ export function QnaForm({
   const [stepIndex, setStepIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [aiAnswering, setAiAnswering] = useState<number | null>(null);
 
   useEffect(() => {
     if (ba) {
@@ -82,6 +83,27 @@ export function QnaForm({
 
   function removeNote(i: number) {
     setNotes((n) => n.filter((_, idx) => idx !== i).map((x, idx) => ({ ...x, no: idx + 1 })));
+  }
+
+  async function answerWithAi(i: number) {
+    const question = notes[i].pertanyaan.trim();
+    if (!question || aiAnswering !== null) return;
+    setAiAnswering(i);
+    setError(null);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenderId, question }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Gagal menjawab");
+      updateNote(i, "jawaban", json.answer);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal menjawab");
+    } finally {
+      setAiAnswering(null);
+    }
   }
 
   async function generate() {
@@ -163,7 +185,7 @@ export function QnaForm({
               Catatan Sesi Pemberian Penjelasan (Aanwijzing)
             </h2>
             <p className="mt-0.5 text-xs text-slate-500">
-              Tulis pertanyaan peserta & jawaban panitia selama sesi — AI akan
+              Tulis pertanyaan peserta & jawaban AI selama sesi — AI akan
               menyusunnya menjadi Berita Acara resmi.
             </p>
           </div>
@@ -210,13 +232,28 @@ export function QnaForm({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-500">
-                    Jawaban panitia
-                  </label>
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-[11px] font-semibold text-slate-500">
+                      Jawaban AI
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => answerWithAi(i)}
+                      disabled={aiAnswering !== null || !n.pertanyaan.trim()}
+                      className="inline-flex items-center gap-1 rounded-md border border-brand-200 bg-brand-50 px-2 py-1 text-[10px] font-semibold text-brand-700 transition hover:bg-brand-100 disabled:opacity-50"
+                    >
+                      {aiAnswering === i ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      {aiAnswering === i ? "Menganalisis…" : "Jawabkan dengan AI"}
+                    </button>
+                  </div>
                   <Textarea
                     value={n.jawaban}
                     onChange={(e) => updateNote(i, "jawaban", e.target.value)}
-                    placeholder="Contoh: Material mengacu pada RKS pasal 2.1, dapat menggunakan cast iron atau stainless steel 316L."
+                    placeholder="Kosongkan, lalu tekan 'Jawabkan dengan AI' atau tulis jawaban resmi panitia."
                     rows={3}
                   />
                 </div>

@@ -789,3 +789,150 @@ export async function mockChatAnswer(params: {
 
   return { answer, sources };
 }
+
+/* ---------------- D5: Chat & edit Draft Berita Acara ---------------- */
+
+// TODO(ai): wire ke LLM (chatCompletion) untuk pemahaman bahasa alami penuh
+// bila OPENAI_API_KEY tersedia. Saat ini selalu berjalan mode demo lokal.
+export async function mockBaChatAnswer(params: {
+  ba: BaJson;
+  question: string;
+}): Promise<{
+  answer: string;
+  editProposal?: { ba_baru: BaJson; ringkasan: string };
+}> {
+  await sleep(650);
+  const { ba, question } = params;
+  const q = question.trim();
+  const ins = lowerTrim(q);
+
+  // ---------- Perintah EDIT struktur BA ----------
+  const ubahNomor = ins.match(
+    /^(?:ubah|ganti|edit)(?:\s+(?:nomor\s*ba|nomor_ba|n_ba|nomor))?\s+(?:menjadi|ke|dengan)\s+["“']?([^"”']{1,120})["”']?$/i
+  );
+  if (ubahNomor) {
+    const nomorBaru = stripQuotes(ubahNomor[1]);
+    if (nomorBaru && nomorBaru !== ba.nomor_ba) {
+      return {
+        answer: `Saya mengubah Nomor BA menjadi "${nomorBaru}".`,
+        editProposal: {
+          ba_baru: { ...ba, nomor_ba: nomorBaru },
+          ringkasan: `Nomor BA diubah menjadi "${nomorBaru}".`,
+        },
+      };
+    }
+    return {
+      answer: `Nomor BA saat ini adalah "${ba.nomor_ba}". Beri tahu saya nomor baru yang diinginkan, misal: ubah nomor BA menjadi BA/PP/001/AANW/2026.`,
+    };
+  }
+
+  const tambah = ins.match(
+    /^(?:tambahkan?|sisipkan|masukkan)\s+(.+)$/i
+  );
+  if (tambah) {
+    let teksBaru = stripQuotes(tambah[1]).replace(/^(?:klausa\s+|poin\s+|catatan\s+)?/, "");
+    teksBaru = teksBaru.replace(/\s+(?:di|pada)\s+(?:bagian\s+)?(?:perubahan|kesimpulan)\s*$/, "");
+    teksBaru = teksBaru.trim();
+    if (teksBaru.length > 2) {
+      const perubahan = [...(ba.perubahan ?? []), teksBaru];
+      return {
+        answer: `Saya menambahkan catatan baru ke bagian Perubahan/Penambahan dokumen: "${firstSentence(teksBaru, 120)}".`,
+        editProposal: {
+          ba_baru: { ...ba, perubahan },
+          ringkasan: `Catatan ditambahkan ke bagian Perubahan/Penambahan: "${firstSentence(teksBaru, 120)}".`,
+        },
+      };
+    }
+    return {
+      answer:
+        "Instruksi penambahan tidak jelas. Contoh: \"tambahkan klausa: vendor wajib menyertakan jaminan mutu\".",
+    };
+  }
+
+  const hapusTj = ins.match(
+    /^(?:hapus|buang|hilangkan)\s+(?:pertanyaan|tanya[- ]?jawab(?:an)?|poin|baris|butir)\s*(?:nomor\s*)?(\d+)/i
+  );
+  if (hapusTj) {
+    const target = Number(hapusTj[1]);
+    const exists = (ba.tanya_jawab ?? []).some((t) => t.no === target);
+    if (!exists) {
+      return {
+        answer: `Tidak ada tanya-jawab nomor ${target} pada berita acara ini. Nomor yang tersedia: ${(ba.tanya_jawab ?? []).map((t) => t.no).join(", ") || "tidak ada"}.`,
+      };
+    }
+    const tanya_jawab = (ba.tanya_jawab ?? [])
+      .filter((t) => t.no !== target)
+      .map((t, i) => ({ ...t, no: i + 1 }));
+    return {
+      answer: `Saya menghapus tanya-jawab nomor ${target} dan menomori ulang daftar.`,
+      editProposal: {
+        ba_baru: { ...ba, tanya_jawab },
+        ringkasan: `Tanya-jawab nomor ${target} dihapus dari berita acara.`,
+      },
+    };
+  }
+
+  const perbaiki = ins.match(
+    /^(?:perbaiki|rapikan|bersihkan)\s+(?:ejaan|format|penulisan|tata)/i
+  );
+  if (perbaiki) {
+    return {
+      answer:
+        "Mode demo lokal belum menerapkan perbaikan ejaan otomatis pada struktur JSON berita acara. Anda tetap dapat menekan tombol 'Edit' untuk memperbaiki teks secara manual, atau beri instruksi yang lebih spesifik (misal: ubah nomor BA, tambahkan klausa, atau hapus tanya-jawab nomor N).",
+    };
+  }
+
+  // ---------- Pertanyaan tentang isi BA ----------
+  const ringkas =
+    /ringkas|rangkum|summar/i.test(ins) || /isi dari berita acara/i.test(ins);
+  const berapa =
+    /berapa|jumlah|count/i.test(ins) && /poin|pertanyaan|tanya|nomor|baris/i.test(ins);
+
+  if (ringkas) {
+    const jawab = (ba.tanya_jawab ?? []).length;
+    const poin = (ba.poin_penjelasan ?? []).length;
+    const perubahan = (ba.perubahan ?? []).filter((p) => !/tidak terdapat perubahan/i.test(p));
+    return {
+      answer: [
+        `Ringkasan Berita Acara: "${ba.nomor_ba}".`,
+        `• Pelaksanaan: ${firstSentence(ba.ringkasan_pelaksanaan, 200)}`,
+        `• Poin penjelasan: ${poin} poin utama.`,
+        `• Tanya-jawab: ${jawab} pertanyaan tercatat.`,
+        perubahan.length > 0
+          ? `• Perubahan: ${perubahan.length} catatan — ${firstSentence(perubahan[0], 120)}`
+          : "• Perubahan: tidak ada perubahan terhadap dokumen RKS.",
+        `• Kesimpulan: ${firstSentence(ba.kesimpulan, 180)}`,
+      ].join("\n"),
+    };
+  }
+
+  if (berapa) {
+    const counts = [
+      `• Poin penjelasan: ${(ba.poin_penjelasan ?? []).length}`,
+      `• Tanya-jawab: ${(ba.tanya_jawab ?? []).length}`,
+      `• Perubahan/penambahan: ${(ba.perubahan ?? []).length}`,
+    ];
+    return { answer: `Pada "${ba.nomor_ba}":\n${counts.join("\n")}` };
+  }
+
+  const tanyaKesimpulan = /kesimpulan|penutup|hasil akhir/i.test(ins);
+  if (tanyaKesimpulan) {
+    return {
+      answer: `Bagian kesimpulan berita acara: "${firstSentence(ba.kesimpulan, 260)}"`,
+    };
+  }
+
+  const tanyaPeserta = /peserta|hadir|dihadiri|peserta hadir|jumlah peserta/i.test(ins);
+  if (tanyaPeserta) {
+    const match = ba.ringkasan_pelaksanaan.match(/(\d+)\s+perwakilan/);
+    return {
+      answer: match
+        ? `Sesi dihadiri oleh ${match[1]} perwakilan calon penyedia jasa, sebagaimana tercantum pada bagian Ringkasan Pelaksanaan.`
+        : "Jumlah peserta tidak disebutkan eksplisit. Detail pelaksanaan: " + firstSentence(ba.ringkasan_pelaksanaan, 220),
+    };
+  }
+
+  return {
+    answer: `Saya dapat membantu Anda memahami atau mengedit Draft Berita Acara "${ba.nomor_ba}".\n\nPertanyaan yang bisa saya jawab: "ringkas isi berita acara", "berapa poin penjelasan?", "apa isi kesimpulan?".\n\nInstruksi edit yang bisa saya terapkan: "ubah nomor BA menjadi …", "tambahkan klausa: …", "hapus tanya-jawab nomor N", "perbaiki ejaan".`,
+  };
+}

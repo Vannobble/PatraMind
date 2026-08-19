@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/supabase/auth";
 import { TenderDetailTabs } from "@/components/prebid/tender-detail-tabs";
 import { TenderOverview } from "@/components/prebid/tender-overview";
+import { UploadPanel } from "@/components/prebid/upload-panel";
 import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/ui/back-button";
 import { TENDER_STATUS_LABELS } from "@/lib/constants";
@@ -137,6 +138,7 @@ export default async function TenderDetailPage({
           evalStats={evalStats}
           canEditRingkasan={["panitia", "admin"].includes(profile?.role ?? "")}
         />
+        <UploadPanel />
       </div>
 
       <TenderDetailTabs

@@ -79,7 +79,7 @@ export function BaDocument({
                   <tr className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                     <th className="w-10 px-3 py-2">No</th>
                     <th className="px-3 py-2">Pertanyaan</th>
-                    <th className="px-3 py-2">Jawaban Panitia</th>
+                    <th className="px-3 py-2">Jawaban AI</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

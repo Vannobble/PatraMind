@@ -10,6 +10,7 @@ import type {
 import { chatCompletion } from "./openai";
 import {
   mockAssessmentChatAnswer,
+  mockBaChatAnswer,
   mockChatAnswer,
   mockConsensus,
   mockDepartmentProposal,
@@ -88,6 +89,20 @@ export async function generateBa(params: {
       : [],
     kesimpulan: parsed.kesimpulan ?? "",
   };
+}
+
+/* ================= D5 — Chat & edit Draft Berita Acara ================= */
+
+// TODO(ai): wiring ke LLM (chatCompletion) untuk pemahaman bahasa alami penuh
+// bila OPENAI_API_KEY tersedia — saat ini memakai generator demo lokal.
+export async function baChatAnswer(params: {
+  ba: BaJson;
+  question: string;
+}): Promise<{
+  answer: string;
+  editProposal?: { ba_baru: BaJson; ringkasan: string };
+}> {
+  return mockBaChatAnswer(params);
 }
 
 /* ================= D6 — Evaluasi per aspek ================= */
