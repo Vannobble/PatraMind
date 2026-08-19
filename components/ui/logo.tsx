@@ -20,6 +20,7 @@ export function Logo({
           size === "sm" && "h-9",
           size === "md" && "h-11",
           size === "lg" && "h-14",
+          className,
           dark && "drop-shadow-[0_2px_10px_rgba(1,57,160,0.45)]"
         )}
       />

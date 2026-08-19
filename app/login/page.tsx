@@ -72,22 +72,22 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-12 lg:flex">
-        <Logo dark size="lg" />
-        <p className="mt-8 max-w-sm text-center text-sm leading-6 text-brand-200">
+      <div className="hidden w-[45%] flex-col items-center justify-center bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-10 lg:flex lg:p-16">
+        <Logo dark size="lg" className="h-20" />
+        <p className="mt-10 max-w-md text-center text-xl font-semibold leading-9 text-white/90 md:text-2xl">
           PATRAMIND — Intelligent Procurement Workspace untuk PT Pertamina
           Patra Niaga. Satu tempat untuk mengelola tender, dokumen, dan evaluasi
           pengadaan dengan bantuan Context-Aware Agentic AI.
         </p>
-        <p className="mt-10 text-xs text-brand-300">
+        <p className="mt-12 text-sm text-slate-300">
           Prototype akademik — FILKOM x Pertamina Patra Niaga
         </p>
       </div>
 
       <div className="flex flex-1 flex-col justify-center bg-slate-50 px-6 py-10 sm:px-12">
-        <div className="mx-auto w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <Logo />
+        <div className="mx-auto w-full max-w-lg">
+          <div className="mb-10 lg:hidden">
+            <Logo className="h-14" />
           </div>
 
           {error && (
@@ -102,10 +102,10 @@ export default function LoginPage() {
             </div>
           )}
 
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
             Masuk ke Workspace
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-2 text-base text-slate-600">
             Gunakan akun yang diberikan panitia ({ROLE_LABELS.panitia},{" "}
             {ROLE_LABELS.teknis}, {ROLE_LABELS.otorisator}, atau{" "}
             {ROLE_LABELS.admin})
@@ -116,10 +116,12 @@ export default function LoginPage() {
               e.preventDefault();
               if (email && password) doLogin(email, password);
             }}
-            className="mt-6 space-y-3"
+            className="mt-8 space-y-5"
           >
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -127,10 +129,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="h-12 rounded-xl px-4 text-base"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -138,11 +143,12 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-12 rounded-xl px-4 text-base"
               />
             </div>
             <Button
               type="submit"
-              className="w-full"
+              className="h-12 w-full text-base"
               disabled={busy}
               variant="primary"
               size="lg"
